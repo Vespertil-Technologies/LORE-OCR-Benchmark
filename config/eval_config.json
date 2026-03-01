@@ -1,0 +1,109 @@
+{
+  "_comment": "Frozen evaluation configuration. Must not change between runs being compared on the leaderboard. Bump _version if any value changes.",
+  "_version": "1.0.0",
+
+  "model": {
+    "_comment": "Active model for this run. Override per run — do not change the defaults here.",
+    "name": "gpt-4o-2024-08-06",
+    "backend": "openai",
+    "_backend_options": ["openai", "anthropic", "ollama", "llama_cpp"],
+    "temperature": 0,
+    "max_tokens": 1024,
+    "api_key_env_var": "OPENAI_API_KEY",
+    "_api_note": "API key is read from environment variable — never hardcoded."
+  },
+
+  "supported_models": {
+    "_comment": "Reference table of all models used in the benchmark. Run IDs match Phase 4 experiment matrix.",
+    "R00": { "name": "always_null",          "backend": "hardcoded"  },
+    "R01": { "name": "regex_rules",           "backend": "hardcoded"  },
+    "R02": { "name": "llama-3.1-8b-instruct", "backend": "ollama"     },
+    "R03": { "name": "gpt-4o-2024-08-06",     "backend": "openai"     },
+    "R04": { "name": "claude-3-5-sonnet-20241022", "backend": "anthropic" },
+    "R05": { "name": "gpt-4o-2024-08-06",     "backend": "openai",    "post_normalize": true },
+    "R06": {    "name": "llama3.2", "backend": "ollama", "temperature": 0, "max_tokens": 1024, "api_key_env_var": null}
+
+  },
+
+  "retry_policy": {
+    "max_retries": 3,
+    "backoff_base_seconds": 2,
+    "_backoff_note": "Retry wait = backoff_base^attempt. Attempt 1 = 2s, attempt 2 = 4s, attempt 3 = 8s."
+  },
+
+  "metrics": {
+    "run_field_metrics":          true,
+    "run_normalization_metrics":  true,
+    "run_correction_metrics":     true,
+    "run_hallucination_detector": true,
+    "run_schema_validator":       true
+  },
+
+  "thresholds": {
+    "numeric_relative_error_tolerance": 0.01,
+    "_numeric_note": "A numeric prediction is 'within tolerance' if |pred - gt| / gt <= this value.",
+
+    "hallucination_fuzzy_match_threshold": 85,
+    "_hallucination_note": "rapidfuzz partial_ratio score. A predicted value >= this threshold is considered derivable from ocr_text and NOT hallucinated.",
+
+    "human_eval_trigger_f1_gap": 0.02,
+    "_human_eval_note": "If two models are within this F1 gap, trigger human evaluation for tie-breaking.",
+
+    "min_iaa_kappa": 0.70,
+    "_iaa_note": "Minimum Cohen's kappa for inter-annotator agreement to trust human eval results."
+  },
+
+  "aggregation": {
+    "bootstrap_resamples": 10000,
+    "confidence_interval": 0.95,
+    "percentiles": [10, 50, 90],
+    "grouping_levels": ["overall", "domain", "difficulty", "domain_x_difficulty"]
+  },
+
+  "statistical_tests": {
+    "ci_overlap_check": true,
+    "wilcoxon_signed_rank": true,
+    "significance_threshold": 0.05
+  },
+
+  "output": {
+    "runs_dir": "runs/",
+    "predictions_filename": "predictions.jsonl",
+    "run_config_filename":  "run_config.json",
+    "report_filename":      "report.html"
+  },
+
+  "prompt_templates_dir": "prompts/templates/",
+
+  "normalization": {
+    "date_output_format": "YYYY-MM-DD",
+    "time_output_format": "HH:MM",
+    "currency_output_format": "ISO-4217",
+    "phone_digit_count": 10,
+    "string_lowercase_before_compare": true,
+
+    "abbreviation_expansions": {
+      "_comment": "Shared lookup used by both key_abbrev noise function and string normalizer — must stay in sync.",
+      "addr":    "address",
+      "dept":    "department",
+      "dob":     "date of birth",
+      "pol no":  "policy number",
+      "polcy no":"policy number",
+      "pymnt":   "payment",
+      "vnd":     "vendor",
+      "cc":      "reason for visit",
+      "hr":      "pulse",
+      "wt":      "weight",
+      "ht":      "height",
+      "bg":      "blood group",
+      "bp":      "blood pressure"
+    }
+  },
+
+  "failure_mode_thresholds": {
+    "_comment": "A sample is tagged with a failure mode if it crosses these thresholds.",
+    "wrong_value_ned_min":       0.0,
+    "normalization_failure_ned_min": 0.01,
+    "correction_regression_gain_max": 0.0
+  }
+}

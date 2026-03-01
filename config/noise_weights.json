@@ -1,0 +1,298 @@
+{
+  "_comment": "Controls how the noise engine samples noise types. Weights are relative \u2014 they don't need to sum to 1. Higher weight = sampled more often.",
+  "_version": "1.0.0",
+  "difficulty_ranges": {
+    "_comment": "How many noise functions to apply per tier at each difficulty level. Ranges are inclusive [min, max].",
+    "easy": {
+      "tier_1_2_count": [
+        0,
+        1
+      ],
+      "tier_3_count": [
+        0,
+        0
+      ],
+      "tier_4_count": [
+        0,
+        0
+      ]
+    },
+    "medium": {
+      "tier_1_2_count": [
+        2,
+        3
+      ],
+      "tier_3_count": [
+        0,
+        1
+      ],
+      "tier_4_count": [
+        0,
+        0
+      ]
+    },
+    "hard": {
+      "tier_1_2_count": [
+        4,
+        5
+      ],
+      "tier_3_count": [
+        1,
+        2
+      ],
+      "tier_4_count": [
+        0,
+        0
+      ]
+    },
+    "extreme": {
+      "tier_1_2_count": [
+        5,
+        6
+      ],
+      "tier_3_count": [
+        2,
+        3
+      ],
+      "tier_4_count": [
+        1,
+        2
+      ]
+    }
+  },
+  "tier_1_weights": {
+    "_comment": "Character-level noise. These are the most common real OCR errors \u2014 weighted highest.",
+    "char_O0": 8,
+    "char_l1I": 8,
+    "char_B8": 5,
+    "char_S5": 5,
+    "char_sub": 6,
+    "char_del": 6,
+    "char_transpose": 3
+  },
+  "tier_2_weights": {
+    "_comment": "Field/structure-level noise. Common but less frequent than character errors.",
+    "missing_colon": 7,
+    "merged_lines": 5,
+    "split_line": 3,
+    "key_abbrev": 6,
+    "value_truncated": 4,
+    "delimiter_swap": 3
+  },
+  "tier_3_weights": {
+    "_comment": "Numeric and date corruption. Applied independently from tier 1-2.",
+    "num_comma_drop": 5,
+    "num_decimal_shift": 3,
+    "date_format_vary": 6,
+    "date_partial": 4
+  },
+  "tier_4_weights": {
+    "_comment": "Hallucination traps. Extreme difficulty only. Applied independently.",
+    "extraneous_field": 4,
+    "ghost_value": 3,
+    "conflicting_field": 3,
+    "ambiguous_key": 2,
+    "value_swap": 4,
+    "section_erase": 3
+  },
+  "domain_applicability": {
+    "_comment": "Some noise types only make sense for certain domains. null means applies to all.",
+    "char_O0": null,
+    "char_l1I": null,
+    "char_B8": [
+      "insurance",
+      "hospital"
+    ],
+    "char_S5": null,
+    "char_sub": null,
+    "char_del": null,
+    "char_transpose": null,
+    "missing_colon": null,
+    "merged_lines": [
+      "insurance",
+      "hospital"
+    ],
+    "split_line": [
+      "insurance"
+    ],
+    "key_abbrev": null,
+    "value_truncated": null,
+    "delimiter_swap": null,
+    "num_comma_drop": [
+      "receipts",
+      "insurance"
+    ],
+    "num_decimal_shift": [
+      "receipts"
+    ],
+    "date_format_vary": null,
+    "date_partial": null,
+    "extraneous_field": null,
+    "ghost_value": [
+      "insurance",
+      "hospital"
+    ],
+    "conflicting_field": null,
+    "ambiguous_key": null,
+    "value_swap": null,
+    "section_erase": null
+  },
+  "noise_application_rates": {
+    "_comment": "Within a noise function, what fraction of eligible tokens/lines are actually affected. Randomized within range.",
+    "char_O0": {
+      "min": 0.4,
+      "max": 0.7
+    },
+    "char_l1I": {
+      "min": 0.3,
+      "max": 0.6
+    },
+    "char_B8": {
+      "min": 0.3,
+      "max": 0.5
+    },
+    "char_S5": {
+      "min": 0.3,
+      "max": 0.5
+    },
+    "char_sub": {
+      "chars_per_line": [
+        1,
+        2
+      ]
+    },
+    "char_del": {
+      "chars_per_line": [
+        1,
+        1
+      ]
+    },
+    "char_transpose": {
+      "chars_per_line": [
+        1,
+        1
+      ]
+    },
+    "missing_colon": {
+      "min": 0.3,
+      "max": 0.5
+    },
+    "merged_lines": {
+      "merges_per_sample": [
+        1,
+        2
+      ]
+    },
+    "split_line": {
+      "splits_per_sample": [
+        1,
+        1
+      ]
+    },
+    "key_abbrev": {
+      "min": 0.2,
+      "max": 0.4
+    },
+    "value_truncated": {
+      "truncations_per_sample": [
+        1,
+        1
+      ]
+    },
+    "delimiter_swap": {
+      "lines_per_sample": [
+        1,
+        2
+      ]
+    },
+    "num_comma_drop": {
+      "min": 1.0,
+      "max": 1.0
+    },
+    "num_decimal_shift": {
+      "min": 1.0,
+      "max": 1.0
+    },
+    "date_format_vary": {
+      "min": 1.0,
+      "max": 1.0
+    },
+    "date_partial": {
+      "min": 1.0,
+      "max": 1.0
+    },
+    "extraneous_field": {
+      "lines_per_sample": [
+        1,
+        2
+      ]
+    },
+    "ghost_value": {
+      "fields_per_sample": [
+        1,
+        1
+      ]
+    },
+    "conflicting_field": {
+      "fields_per_sample": [
+        1,
+        1
+      ]
+    },
+    "ambiguous_key": {
+      "fields_per_sample": [
+        1,
+        1
+      ]
+    },
+    "value_swap": {
+      "lines_per_sample": [
+        1,
+        1
+      ]
+    },
+    "section_erase": {
+      "lines_per_sample": [
+        2,
+        4
+      ]
+    }
+  },
+  "extraneous_field_pool": {
+    "_comment": "Pool of fake fields injected by the extraneous_field noise function, per domain.",
+    "receipts": [
+      "Cashier: Anita",
+      "Store ID: B-204",
+      "Terminal: POS-12",
+      "Loyalty Points: 42"
+    ],
+    "insurance": [
+      "Nominee: N/A",
+      "Branch Code: 4421",
+      "Agent Branch: MUM-07",
+      "Scheme Code: TRML"
+    ],
+    "hospital": [
+      "Ward No: 12B",
+      "Bed Number: 44",
+      "Nurse: Sister Rekha",
+      "Token No: T-089"
+    ]
+  },
+  "date_format_variants": [
+    "DD/MM/YYYY",
+    "MM/DD/YYYY",
+    "DD-MM-YYYY",
+    "DD-Mon-YYYY",
+    "DDMMYYYY",
+    "MM-DD-YY",
+    "DD/MM/YY"
+  ],
+  "delimiter_swap_chars": [
+    "-",
+    "/",
+    " ",
+    " - ",
+    " / "
+  ]
+}

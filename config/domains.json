@@ -1,0 +1,175 @@
+{
+  "_comment": "Frozen domain schemas. Do not modify without versioning. All downstream modules read from here.",
+  "_version": "1.0.0",
+
+  "receipts": {
+    "output_structure": "flat",
+    "schema": {
+      "vendor_name":    { "type": "string",  "nullable": true },
+      "date":           { "type": "date",    "nullable": true, "format": "YYYY-MM-DD" },
+      "time":           { "type": "time",    "nullable": true, "format": "HH:MM" },
+      "receipt_number": { "type": "string",  "nullable": true },
+      "subtotal":       { "type": "number",  "nullable": true },
+      "tax_amount":     { "type": "number",  "nullable": true },
+      "total_amount":   { "type": "number",  "nullable": true },
+      "currency":       { "type": "string",  "nullable": true, "format": "ISO-4217" },
+      "payment_method": { "type": "string",  "nullable": true },
+      "line_items":     { "type": "string",  "nullable": true }
+    },
+    "required_fields": ["vendor_name", "date", "total_amount", "currency"],
+    "optional_fields": ["time", "receipt_number", "subtotal", "tax_amount", "payment_method", "line_items"],
+    "key_label_variants": {
+      "vendor_name":    ["Vendor", "Vnd", "Store", "Merchant", "Shop"],
+      "date":           ["Date", "Dt", "Invoice Date", "Bill Date"],
+      "time":           ["Time", "Tm"],
+      "receipt_number": ["Receipt No", "Rcpt No", "Bill No", "Invoice No", "Ref No"],
+      "subtotal":       ["Subtotal", "Sub Total", "Sub-Total"],
+      "tax_amount":     ["Tax", "GST", "VAT", "Tax Amount"],
+      "total_amount":   ["Total", "Grand Total", "Amount Due", "Net Amount"],
+      "currency":       ["Currency", "Curr"],
+      "payment_method": ["Payment", "Pymnt", "Paid By", "Mode"],
+      "line_items":     ["Items", "Line Items", "Details", "Description"]
+    }
+  },
+
+  "insurance": {
+    "output_structure": "nested",
+    "schema": {
+      "policyholder": {
+        "name":           { "type": "string",  "nullable": true },
+        "dob":            { "type": "date",    "nullable": true, "format": "YYYY-MM-DD" },
+        "gender":         { "type": "string",  "nullable": true },
+        "contact_number": { "type": "phone",   "nullable": true },
+        "address":        { "type": "string",  "nullable": true }
+      },
+      "policy": {
+        "policy_number":  { "type": "string",  "nullable": true },
+        "policy_type":    { "type": "string",  "nullable": true },
+        "start_date":     { "type": "date",    "nullable": true, "format": "YYYY-MM-DD" },
+        "end_date":       { "type": "date",    "nullable": true, "format": "YYYY-MM-DD" }
+      },
+      "premium": {
+        "amount":             { "type": "number",  "nullable": true },
+        "currency":           { "type": "string",  "nullable": true, "format": "ISO-4217" },
+        "payment_frequency":  { "type": "string",  "nullable": true }
+      },
+      "agent": {
+        "name":      { "type": "string",  "nullable": true },
+        "agent_id":  { "type": "string",  "nullable": true }
+      }
+    },
+    "required_fields": [
+      "policyholder.name",
+      "policyholder.dob",
+      "policy.policy_number",
+      "premium.amount",
+      "premium.currency"
+    ],
+    "optional_fields": [
+      "policyholder.gender",
+      "policyholder.contact_number",
+      "policyholder.address",
+      "policy.policy_type",
+      "policy.start_date",
+      "policy.end_date",
+      "premium.payment_frequency",
+      "agent.name",
+      "agent.agent_id"
+    ],
+    "key_label_variants": {
+      "policyholder.name":          ["Name", "Namc", "Policy Holder", "Insured"],
+      "policyholder.dob":           ["DOB", "D.O.B", "Date of Birth", "Birth Date", "D08"],
+      "policyholder.gender":        ["Gender", "Sex"],
+      "policyholder.contact_number":["Contact", "Phone", "Mobile", "Ph No"],
+      "policyholder.address":       ["Address", "Addr", "Residence"],
+      "policy.policy_number":       ["Policy No", "Polcy No", "Pol No", "Policy Number"],
+      "policy.policy_type":         ["Type", "Policy Type", "Typc", "Plan"],
+      "policy.start_date":          ["Start Date", "From", "Effective Date"],
+      "policy.end_date":            ["End Date", "To", "Expiry", "Maturity Date"],
+      "premium.amount":             ["Premium", "Premum", "Amount"],
+      "premium.currency":           ["Currency", "Curr"],
+      "premium.payment_frequency":  ["Frequency", "Payment Mode", "Pay Freq"],
+      "agent.name":                 ["Agent", "Agent Name", "Advisor"],
+      "agent.agent_id":             ["Agent ID", "Advisor ID", "ID"]
+    }
+  },
+
+  "hospital": {
+    "output_structure": "nested",
+    "schema": {
+      "patient": {
+        "name":           { "type": "string",  "nullable": true },
+        "dob":            { "type": "date",    "nullable": true, "format": "YYYY-MM-DD" },
+        "gender":         { "type": "string",  "nullable": true },
+        "blood_group":    { "type": "string",  "nullable": true },
+        "contact_number": { "type": "phone",   "nullable": true },
+        "address":        { "type": "string",  "nullable": true }
+      },
+      "visit": {
+        "date":             { "type": "date",    "nullable": true, "format": "YYYY-MM-DD" },
+        "time":             { "type": "time",    "nullable": true, "format": "HH:MM" },
+        "department":       { "type": "string",  "nullable": true },
+        "reason_for_visit": { "type": "string",  "nullable": true }
+      },
+      "vitals": {
+        "blood_pressure": { "type": "string",  "nullable": true },
+        "pulse":          { "type": "string",  "nullable": true },
+        "temperature":    { "type": "string",  "nullable": true },
+        "weight":         { "type": "string",  "nullable": true },
+        "height":         { "type": "string",  "nullable": true }
+      },
+      "insurance": {
+        "provider":       { "type": "string",  "nullable": true },
+        "policy_number":  { "type": "string",  "nullable": true }
+      },
+      "attending_physician": {
+        "name":  { "type": "string",  "nullable": true },
+        "id":    { "type": "string",  "nullable": true }
+      }
+    },
+    "required_fields": [
+      "patient.name",
+      "patient.dob",
+      "visit.date",
+      "visit.reason_for_visit"
+    ],
+    "optional_fields": [
+      "patient.gender",
+      "patient.blood_group",
+      "patient.contact_number",
+      "patient.address",
+      "visit.time",
+      "visit.department",
+      "vitals.blood_pressure",
+      "vitals.pulse",
+      "vitals.temperature",
+      "vitals.weight",
+      "vitals.height",
+      "insurance.provider",
+      "insurance.policy_number",
+      "attending_physician.name",
+      "attending_physician.id"
+    ],
+    "key_label_variants": {
+      "patient.name":               ["Patient", "Patcnt", "Name", "Patient Name"],
+      "patient.dob":                ["DOB", "D.O.B", "Date of Birth", "D08"],
+      "patient.gender":             ["Gender", "Sex"],
+      "patient.blood_group":        ["Blood Group", "Blood Type", "BG"],
+      "patient.contact_number":     ["Contact", "Phone", "Mobile"],
+      "patient.address":            ["Address", "Addr", "Residence"],
+      "visit.date":                 ["Date", "Visit Date", "Admission Date"],
+      "visit.time":                 ["Time", "Visit Time"],
+      "visit.department":           ["Department", "Dept", "Ward", "Unit"],
+      "visit.reason_for_visit":     ["Reason", "Chief Complaint", "CC", "Complaint", "Presenting Complaint"],
+      "vitals.blood_pressure":      ["BP", "Blood Pressure", "B.P"],
+      "vitals.pulse":               ["Pulse", "HR", "Heart Rate"],
+      "vitals.temperature":         ["Temp", "Temperature"],
+      "vitals.weight":              ["Weight", "Wt"],
+      "vitals.height":              ["Height", "Ht"],
+      "insurance.provider":         ["Insurer", "Insurance", "Insurance Co", "TPA"],
+      "insurance.policy_number":    ["Policy No", "Policy Number", "Insurance No"],
+      "attending_physician.name":   ["Doctor", "Dr", "Physician", "Consultant"],
+      "attending_physician.id":     ["REGN No", "Reg No", "Doctor ID", "Physician ID"]
+    }
+  }
+}

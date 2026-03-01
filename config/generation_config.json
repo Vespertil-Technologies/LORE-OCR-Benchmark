@@ -1,0 +1,55 @@
+{
+  "_comment": "Controls synthetic dataset generation. Change base_seed to regenerate with different randomness. All other values reflect Phase 1 decisions.",
+  "_version": "1.0.0",
+
+  "base_seed": 42,
+  "_seed_note": "Per-sample seed is derived as base_seed + sample_index. This makes every sample independently reproducible.",
+
+  "target": "mvp",
+  "_target_note": "mvp = 100 samples per difficulty per domain (1,200 total). Change to 'full' for 200/difficulty/domain.",
+
+  "sample_counts": {
+    "mvp":  { "per_difficulty_per_domain": 100 },
+    "full": { "per_difficulty_per_domain": 200 }
+  },
+
+  "split_ratios": {
+    "train": 0.60,
+    "dev":   0.20,
+    "test":  0.20
+  },
+
+  "domains": ["receipts", "insurance", "hospital"],
+  "difficulties": ["easy", "medium", "hard", "extreme"],
+  "source_type": "synthetic",
+
+  "tasks": ["extraction", "normalization", "correction", "hallucination", "schema"],
+  "_task_note": "Each sample gets a single task label. The same ocr_text may appear across multiple tasks in different samples.",
+
+  "task_distribution": {
+    "_comment": "Fraction of samples per difficulty assigned to each task. Must sum to 1.0.",
+    "easy":    { "extraction": 0.50, "normalization": 0.30, "correction": 0.10, "hallucination": 0.05, "schema": 0.05 },
+    "medium":  { "extraction": 0.40, "normalization": 0.30, "correction": 0.15, "hallucination": 0.10, "schema": 0.05 },
+    "hard":    { "extraction": 0.30, "normalization": 0.25, "correction": 0.20, "hallucination": 0.15, "schema": 0.10 },
+    "extreme": { "extraction": 0.20, "normalization": 0.20, "correction": 0.20, "hallucination": 0.25, "schema": 0.15 }
+  },
+
+  "file_naming": "{domain}/{domain}_{difficulty}_{split}.jsonl",
+
+  "output_dir": "data/",
+
+  "id_prefixes": {
+    "receipts":  "rec",
+    "insurance": "ins",
+    "hospital":  "hosp"
+  },
+
+  "validator_settings": {
+    "_comment": "Rules the noise engine validator enforces before accepting a generated sample.",
+    "max_retries": 5,
+    "easy_medium_required_fields_must_survive": true,
+    "_survival_note": "At easy/medium, required fields must remain recoverable (not completely destroyed) after noise.",
+    "extreme_min_required_fields_degraded": 1,
+    "_degraded_note": "At extreme, at least 1 required field must be degraded or absent to qualify as genuinely hard."
+  }
+}
