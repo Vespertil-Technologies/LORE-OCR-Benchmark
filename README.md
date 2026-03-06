@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/1169776567.svg)](https://doi.org/10.5281/zenodo.18888390)
+
 # LORE — LLM OCR Robustness Evaluation
 
 A benchmark for evaluating how well large language models extract and normalize structured data from corrupted OCR text. Tests models across three document domains, four difficulty tiers, and five evaluation dimensions — with no third-party ML dependencies.
