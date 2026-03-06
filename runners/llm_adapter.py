@@ -99,7 +99,8 @@ def _call_openai(prompt: str, model_cfg: dict) -> str:
             f"API key not found in environment variable '{model_cfg['api_key_env_var']}'"
         )
 
-    client = OpenAI(api_key=api_key)
+    base_url = model_cfg.get("base_url")
+    client = OpenAI(api_key=api_key, **({"base_url": base_url} if base_url else {}))
     response = client.chat.completions.create(
         model=model_cfg["name"],
         messages=[{"role": "user", "content": prompt}],

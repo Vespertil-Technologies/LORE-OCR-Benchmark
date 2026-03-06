@@ -43,23 +43,33 @@ def _extract_ocr_value(
     Find the value for a field in the raw OCR text by scanning for
     its key label variants.
 
+    Rules:
+    - Key must appear at the start of a line (with optional leading whitespace)
+      to avoid matching "Name" inside "Agent Name".
+    - Variants are tried longest-first so specific labels win over generic ones.
+    - Separator and any trailing whitespace are stripped from the captured value.
+
     Returns the raw string value as it appears in the OCR text,
     or None if the field cannot be located.
     """
-    # Build a pattern that matches any key variant followed by a separator and value
-    sep_pattern  = r"[\s:–\-\/]+"
-    value_pattern = r"(.+?)(?:\n|$)"
+    sep_pattern   = r"[ \t]*[:\-–\/][ \t]*"
+    value_pattern = r"(.+?)[ \t]*(?:\n|$)"
 
-    for variant in key_variants:
-        # Escape the variant for regex
+    # Sort longest-first so "Agent Name" is tried before "Name"
+    sorted_variants = sorted(key_variants, key=len, reverse=True)
+
+    for variant in sorted_variants:
         escaped = re.escape(variant)
+        # Anchor to start of line (with optional leading whitespace)
         pattern = re.compile(
-            escaped + sep_pattern + value_pattern,
+            r"(?:^|\n)[ \t]*" + escaped + r"\b" + sep_pattern + value_pattern,
             re.IGNORECASE
         )
         m = pattern.search(ocr_text)
         if m:
-            return m.group(1).strip()
+            val = m.group(1).strip()
+            if val:
+                return val
 
     return None
 

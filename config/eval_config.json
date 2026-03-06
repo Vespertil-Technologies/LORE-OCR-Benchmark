@@ -21,7 +21,11 @@
     "R03": { "name": "gpt-4o-2024-08-06",     "backend": "openai"     },
     "R04": { "name": "claude-3-5-sonnet-20241022", "backend": "anthropic" },
     "R05": { "name": "gpt-4o-2024-08-06",     "backend": "openai",    "post_normalize": true },
-    "R06": {    "name": "llama3.2", "backend": "ollama", "temperature": 0, "max_tokens": 1024, "api_key_env_var": null}
+    "R06": {    "name": "llama3.2", "backend": "ollama", "temperature": 0, "max_tokens": 1024, "api_key_env_var": null},
+    "R07": {"name": "phi3.5",  "backend": "ollama", "temperature": 0, "max_tokens": 1024, "api_key_env_var": null},
+    "R08": {"name": "mistral", "backend": "ollama", "temperature": 0, "max_tokens": 1024, "api_key_env_var": null},
+    "R09": {"name": "qwen2.5:7b","backend": "ollama","temperature": 0,"max_tokens": 1024, "api_key_env_var": null},
+    "R10": {"name": "llama-3.3-70b-versatile","backend": "openai","base_url": "https://api.groq.com/openai/v1","api_key_env_var": "GROQ_API_KEY","temperature": 0,"max_tokens": 1024}
 
   },
 

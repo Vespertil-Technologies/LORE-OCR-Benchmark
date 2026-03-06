@@ -21,6 +21,7 @@ Output structure:
 """
 
 import json
+import re
 import time
 import hashlib
 from pathlib import Path
@@ -209,7 +210,23 @@ def run(
 
     # ── Setup run directory ────────────────────────────────────────────────
     if run_dir is None:
-        run_dir = _make_run_dir(model_cfg["name"])
+        # Auto-resume: look for an existing partial run for this model
+        # Match any run folder for this model that has partial predictions
+        # Use a loose prefix match — folder name uses whatever sanitization _make_run_dir applied
+        model_prefix = re.sub(r"[^\w]", "_", model_cfg["name"])  # same as _make_run_dir
+        existing = sorted(
+            [d for d in _RUNS_DIR.iterdir()
+             if d.is_dir() and re.sub(r"[^\w]", "_", d.name.split("_2026")[0]) == model_prefix
+             and (d / "predictions.jsonl").exists()
+             and not (d / "evaluated_predictions.jsonl").exists()],
+            reverse=True  # most recent first
+        )
+        if existing:
+            run_dir = existing[0]
+            resume = True
+            print(f"Auto-resuming existing run: {run_dir.name}")
+        else:
+            run_dir = _make_run_dir(model_cfg["name"])
 
     predictions_path = run_dir / "predictions.jsonl"
     call_log_path    = run_dir / "call_log.jsonl"
@@ -282,6 +299,16 @@ def run(
                     sample_id=sample_id,
                     model_cfg=model_cfg,
                 )
+
+            # Check for rate limit — stop immediately, don't save as failure
+            if not call_record.success and call_record.error:
+                err = call_record.error.lower()
+                is_rate_limit = any(kw in err for kw in ["rate limit", "429", "too many requests", "quota", "tokens per day", "tokens per minute"])
+                if is_rate_limit:
+                    print(f"\n  Rate limit hit on sample {i}/{len(todo)} — stopping to avoid saving failed records.")
+                    print(f"  Re-run the same command tomorrow to resume from sample {i}.")
+                    print(f"  ({i-1} samples saved successfully)")
+                    break
 
             # Assemble and write prediction record immediately
             pred_record = _make_prediction_record(
