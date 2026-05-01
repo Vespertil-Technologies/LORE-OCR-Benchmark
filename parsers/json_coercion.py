@@ -17,7 +17,7 @@ Returns:
     (parsed_dict, parse_status)
     parse_status is one of: "success" | "partial" | "failure"
 
-Never raises — always returns something.
+Never raises - always returns something.
 """
 
 import json
@@ -26,7 +26,7 @@ from typing import Any
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ATTEMPT 1 — Direct parse
+# ATTEMPT 1 - Direct parse
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _try_direct(text: str) -> dict | None:
@@ -41,7 +41,7 @@ def _try_direct(text: str) -> dict | None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ATTEMPT 2 — Strip markdown code fences
+# ATTEMPT 2 - Strip markdown code fences
 # ══════════════════════════════════════════════════════════════════════════════
 
 _CODE_FENCE_PATTERN = re.compile(
@@ -63,7 +63,7 @@ def _try_strip_fences(text: str) -> dict | None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ATTEMPT 3 — Extract first {...} block
+# ATTEMPT 3 - Extract first {...} block
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _find_json_object(text: str) -> str | None:
@@ -115,7 +115,7 @@ def _try_extract_block(text: str) -> dict | None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ATTEMPT 4 — Strip prose prefixes
+# ATTEMPT 4 - Strip prose prefixes
 # ══════════════════════════════════════════════════════════════════════════════
 
 _PROSE_PREFIXES = [
@@ -140,7 +140,7 @@ def _try_strip_prefix(text: str) -> dict | None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ATTEMPT 5 — Partial parse via regex key-value extraction
+# ATTEMPT 5 - Partial parse via regex key-value extraction
 # ══════════════════════════════════════════════════════════════════════════════
 
 _KV_PATTERN = re.compile(
@@ -156,7 +156,7 @@ _KV_PATTERN = re.compile(
 def _try_regex_extract(text: str) -> dict | None:
     """
     Last resort: extract individual key-value pairs using regex.
-    Only captures flat key-value pairs — nested structure is lost.
+    Only captures flat key-value pairs - nested structure is lost.
     Returns None if fewer than 2 pairs found (not worth calling partial).
     """
     matches = _KV_PATTERN.findall(text)
@@ -180,7 +180,7 @@ def _try_regex_extract(text: str) -> dict | None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# FIXUP — Clean up common JSON issues before re-attempting
+# FIXUP - Clean up common JSON issues before re-attempting
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _fix_common_issues(text: str) -> str:
@@ -191,7 +191,7 @@ def _fix_common_issues(text: str) -> str:
     # Remove trailing commas before } or ]
     text = re.sub(r",\s*([}\]])", r"\1", text)
     # Replace single quotes with double quotes (only outside existing double-quote strings)
-    # Simple heuristic — only safe for flat structures
+    # Simple heuristic - only safe for flat structures
     if '"' not in text and "'" in text:
         text = text.replace("'", '"')
     # Normalize None → null (Python repr leakage)
@@ -225,27 +225,27 @@ def coerce(raw_text: str) -> tuple[dict, ParseStatus]:
 
     fixed = _fix_common_issues(raw_text)
 
-    # Attempt 1 — Direct
+    # Attempt 1 - Direct
     result = _try_direct(fixed)
     if result is not None:
         return result, "success"
 
-    # Attempt 2 — Strip markdown fences
+    # Attempt 2 - Strip markdown fences
     result = _try_strip_fences(fixed)
     if result is not None:
         return result, "success"
 
-    # Attempt 3 — Extract {...} block
+    # Attempt 3 - Extract {...} block
     result = _try_extract_block(fixed)
     if result is not None:
         return result, "success"
 
-    # Attempt 4 — Strip prose prefix
+    # Attempt 4 - Strip prose prefix
     result = _try_strip_prefix(fixed)
     if result is not None:
         return result, "success"
 
-    # Attempt 5 — Partial regex extraction
+    # Attempt 5 - Partial regex extraction
     result = _try_regex_extract(fixed)
     if result is not None:
         return result, "partial"
@@ -290,11 +290,11 @@ if __name__ == "__main__":
          '{"vendor_name": "SwiggyMart", "time": None, "success": True}',
          "success"),
 
-        ("Partial — only key-value pairs, no braces",
+        ("Partial - only key-value pairs, no braces",
          '"vendor_name": "SwiggyMart", "total_amount": 368.16, "currency": "INR"',
          "partial"),
 
-        ("Complete failure — pure prose",
+        ("Complete failure - pure prose",
          'I was unable to extract any structured data from this OCR text.',
          "failure"),
 
@@ -309,11 +309,11 @@ if __name__ == "__main__":
     all_passed = True
     for label, raw, expected_status in test_cases:
         result, status = coerce(raw)
-        match = "✓" if status == expected_status else "✗ MISMATCH"
+        match = "PASS" if status == expected_status else "FAIL MISMATCH"
         if status != expected_status:
             all_passed = False
         keys = list(result.keys()) if result else []
         print(f"{label:<45} {status:<10} {keys}  {match}")
 
     print()
-    print("All tests passed ✓" if all_passed else "Some tests FAILED ✗")
+    print("All tests passed" if all_passed else "Some tests FAILED")

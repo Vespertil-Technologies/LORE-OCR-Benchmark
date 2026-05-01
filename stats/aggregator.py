@@ -5,10 +5,10 @@ Takes a list of evaluated prediction records (after all 5 evaluator
 modules have run) and computes dataset-level statistics.
 
 Grouping levels (from eval_config.json):
-    1. overall              — all domains, all difficulties
-    2. domain               — per domain
-    3. difficulty           — per difficulty level
-    4. domain_x_difficulty  — 12 cells (3 domains × 4 difficulties)
+    1. overall              - all domains, all difficulties
+    2. domain               - per domain
+    3. difficulty           - per difficulty level
+    4. domain_x_difficulty  - 12 cells (3 domains × 4 difficulties)
 
 Statistics computed per metric per group:
     - mean
@@ -44,7 +44,7 @@ _EVAL_CFG = _load_json(_CONFIG_DIR / "eval_config.json")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# METRICS KEYS — what we extract from each evaluated prediction record
+# METRICS KEYS - what we extract from each evaluated prediction record
 # These are the scalar metrics written by the full evaluator pipeline
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -63,7 +63,7 @@ SCALAR_METRICS = [
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STATISTICAL HELPERS — pure Python, no numpy
+# STATISTICAL HELPERS - pure Python, no numpy
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _mean(values: list[float]) -> float | None:
@@ -121,7 +121,7 @@ def _summarize(values: list[float]) -> dict:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# METRIC EXTRACTION — pull scalar metrics from one evaluated record
+# METRIC EXTRACTION - pull scalar metrics from one evaluated record
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _extract_metrics(record: dict) -> dict[str, float | None]:
@@ -424,7 +424,7 @@ if __name__ == "__main__":
         })
 
     print("=" * 60)
-    print("PART 1 — Aggregate stats")
+    print("PART 1 - Aggregate stats")
     print("=" * 60)
     agg = aggregate(records)
     print(f"Total records: {agg['n_records']}")
@@ -432,13 +432,13 @@ if __name__ == "__main__":
     print_summary(agg, "field_f1")
 
     print("\n" + "=" * 60)
-    print("PART 2 — Failure mode breakdown")
+    print("PART 2 - Failure mode breakdown")
     print("=" * 60)
     for mode, count in sorted(agg["failure_modes"].items(), key=lambda x: -x[1]):
         print(f"  {mode:<30} {count:>4}")
 
     print("\n" + "=" * 60)
-    print("PART 3 — Hallucination rate by difficulty")
+    print("PART 3 - Hallucination rate by difficulty")
     print("=" * 60)
     for diff in ["easy", "medium", "hard", "extreme"]:
         stats = agg["by_difficulty"].get(diff, {}).get("hallucination_rate", {})

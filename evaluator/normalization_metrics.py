@@ -4,11 +4,11 @@ evaluator/normalization_metrics.py
 Measures how close predicted values are to ground truth beyond binary exact match.
 
 Metrics produced per field:
-    - exact_match      : bool — normalized pred == normalized gt
-    - edit_distance    : int  — raw Levenshtein distance (strings only)
-    - ned              : float 0–1 — normalized edit distance (strings only)
-    - relative_error   : float — |pred - gt| / |gt| (numbers only)
-    - within_tolerance : bool — relative_error <= threshold (numbers only)
+    - exact_match      : bool - normalized pred == normalized gt
+    - edit_distance    : int  - raw Levenshtein distance (strings only)
+    - ned              : float 0–1 - normalized edit distance (strings only)
+    - relative_error   : float - |pred - gt| / |gt| (numbers only)
+    - within_tolerance : bool - relative_error <= threshold (numbers only)
 
 Aggregate metrics:
     - mean_ned              : mean NED across all string fields
@@ -238,7 +238,7 @@ def compute_normalization_metrics(
 if __name__ == "__main__":
 
     print("=" * 60)
-    print("PART 1 — Levenshtein sanity checks")
+    print("PART 1 - Levenshtein sanity checks")
     print("=" * 60)
     cases = [
         ("kitten", "sitting", 3),
@@ -249,27 +249,27 @@ if __name__ == "__main__":
     ]
     for a, b, expected in cases:
         dist   = levenshtein(a, b)
-        status = "✓" if dist == expected else f"✗ got {dist}"
+        status = "PASS" if dist == expected else f"FAIL got {dist}"
         print(f"  '{a}' vs '{b}' → {dist}  {status}")
 
     print("\n" + "=" * 60)
-    print("PART 2 — Per-field normalization metrics")
+    print("PART 2 - Per-field normalization metrics")
     print("=" * 60)
 
     field_cases = [
         # (pred, gt, type, label)
-        ("2002-08-12",  "2002-08-12",  "date",   "Date — exact match"),
-        ("2002-08-11",  "2002-08-12",  "date",   "Date — off by one day"),
-        ("ashwin shetty", "ashwin shetty", "string", "Name — exact"),
-        ("ashwln shetty", "ashwin shetty", "string", "Name — 1 char error"),
-        (5000.0,   5000.0,  "number", "Number — exact"),
-        (5050.0,   5000.0,  "number", "Number — 1% off (within tol)"),
-        (5100.0,   5000.0,  "number", "Number — 2% off (outside tol)"),
-        (None,     "INR",   "string", "Currency — missing prediction"),
+        ("2002-08-12",  "2002-08-12",  "date",   "Date - exact match"),
+        ("2002-08-11",  "2002-08-12",  "date",   "Date - off by one day"),
+        ("ashwin shetty", "ashwin shetty", "string", "Name - exact"),
+        ("ashwln shetty", "ashwin shetty", "string", "Name - 1 char error"),
+        (5000.0,   5000.0,  "number", "Number - exact"),
+        (5050.0,   5000.0,  "number", "Number - 1% off (within tol)"),
+        (5100.0,   5000.0,  "number", "Number - 2% off (outside tol)"),
+        (None,     "INR",   "string", "Currency - missing prediction"),
     ]
     for pred, gt, ftype, label in field_cases:
         m = compute_field_normalization(pred, gt, ftype)
-        em = "✓" if m["exact_match"] else "✗"
+        em = "yes" if m["exact_match"] else "no"
         extra = ""
         if "ned" in m:
             extra = f"NED={m['ned']}"
@@ -278,7 +278,7 @@ if __name__ == "__main__":
         print(f"  {label:<38} exact={em}  {extra}")
 
     print("\n" + "=" * 60)
-    print("PART 3 — Full struct normalization metrics")
+    print("PART 3 - Full struct normalization metrics")
     print("=" * 60)
 
     gt = {

@@ -214,7 +214,7 @@ def _generate_insurance(rng: random.Random, index: int) -> dict:
         duration = rng.choice([5, 10, 15, 20, 25, 30])
         end_date = date(start_d.year + duration, start_d.month, start_d.day).isoformat()
 
-    # Fully random amount — not from a fixed pool a model could memorise
+    # Fully random amount - not from a fixed pool a model could memorise
     amount    = round(rng.uniform(300, 30000), 2)
     freq      = rng.choice(_PAYMENT_FREQS)
 
@@ -262,7 +262,7 @@ _DEPARTMENTS = [
     "Emergency", "Radiology", "Physiotherapy",
 ]
 
-# Complaints are generated procedurally — not from a fixed pool.
+# Complaints are generated procedurally - not from a fixed pool.
 # This prevents models from guessing values they've seen in training.
 _COMPLAINT_SYMPTOMS = [
     "fever", "chest pain", "headache", "abdominal pain", "back pain",
@@ -295,7 +295,7 @@ _COMPLAINT_PURPOSES = [
 ]
 
 def _random_complaint(rng: random.Random) -> str:
-    """Generate a unique procedural complaint — not drawn from a fixed pool."""
+    """Generate a unique procedural complaint - not drawn from a fixed pool."""
     # 20% chance of a specific purpose visit
     if rng.random() < 0.20:
         return rng.choice(_COMPLAINT_PURPOSES)
@@ -438,7 +438,7 @@ def generate_batch(
     Args:
         domain: 'receipts', 'insurance', or 'hospital'
         n:      Number of records to generate
-        seed:   Base random seed — same seed always produces the same batch
+        seed:   Base random seed - same seed always produces the same batch
 
     Returns:
         List of n gt_struct dicts, each distinct
@@ -468,23 +468,23 @@ if __name__ == "__main__":
             print(f"\n--- Sample {i+1} ---")
             print(json.dumps(gt, indent=2))
 
-    # Diversity check — make sure samples differ
+    # Diversity check - make sure samples differ
     print(f"\n{'='*60}")
-    print("Diversity check: 300 receipts — unique vendor_names")
+    print("Diversity check: 300 receipts - unique vendor_names")
     receipts = generate_batch("receipts", n=300, seed=42)
     vendors  = {r["vendor_name"] for r in receipts}
     totals   = {r["total_amount"] for r in receipts}
     print(f"  Unique vendors : {len(vendors)} / {len(_VENDORS)}")
     print(f"  Unique totals  : {len(totals)}")
 
-    print("\n300 insurance — unique policy numbers and types")
+    print("\n300 insurance - unique policy numbers and types")
     insurance = generate_batch("insurance", n=300, seed=42)
     polnos    = {r["policy"]["policy_number"] for r in insurance}
     poltypes  = {r["policy"]["policy_type"] for r in insurance}
     print(f"  Unique policy numbers : {len(polnos)}")
     print(f"  Unique policy types   : {len(poltypes)} / {len(_POLICY_TYPES)}")
 
-    print("\n300 hospital — unique complaints and departments")
+    print("\n300 hospital - unique complaints and departments")
     hospital = generate_batch("hospital", n=300, seed=42)
     comps    = {r["visit"]["reason_for_visit"] for r in hospital}
     depts    = {r["visit"]["department"] for r in hospital}

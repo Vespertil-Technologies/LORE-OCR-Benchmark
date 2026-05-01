@@ -4,7 +4,7 @@ parsers/normalizers.py
 Standardizes extracted field values into canonical form so they
 can be compared fairly against ground truth in gt_struct.
 
-Normalizers are called per-field, per-type. They never raise —
+Normalizers are called per-field, per-type. They never raise -
 they always return the best attempt or None if normalization fails.
 
 Field types (from domains.json):
@@ -69,7 +69,7 @@ def _iso_like(m):
 
 @_reg(r"^(\d{1,2})[/\-\.](\d{1,2})[/\-\.](\d{4})$")
 def _dmy_4year(m):
-    # Ambiguous — assume DD/MM/YYYY (Indian standard)
+    # Ambiguous - assume DD/MM/YYYY (Indian standard)
     return m.group(3), m.group(2).zfill(2), m.group(1).zfill(2)
 
 
@@ -333,7 +333,7 @@ def normalize_payment_frequency(value: Any) -> str | None:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# DISPATCHER — normalize by field type
+# DISPATCHER - normalize by field type
 # ══════════════════════════════════════════════════════════════════════════════
 
 def normalize_value(value: Any, field_type: str) -> Any:
@@ -372,7 +372,7 @@ def normalize_value(value: Any, field_type: str) -> Any:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STRUCT NORMALIZER — normalize an entire pred_struct
+# STRUCT NORMALIZER - normalize an entire pred_struct
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _get_field_type(field_path: str, domain: str, domains_cfg: dict) -> str:
@@ -420,7 +420,7 @@ def normalize_struct(
         pred_struct:  The parsed prediction dict.
         domain:       Domain name.
         domains_cfg:  Loaded domains.json dict.
-        prefix:       Internal — dotted path prefix for recursion.
+        prefix:       Internal - dotted path prefix for recursion.
 
     Returns:
         A new dict with all values normalized.
@@ -447,7 +447,7 @@ if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
     print("=" * 60)
-    print("PART 1 — Date normalization")
+    print("PART 1 - Date normalization")
     print("=" * 60)
 
     date_cases = [
@@ -458,16 +458,16 @@ if __name__ == "__main__":
         ("14/03/24",      "2024-03-14"),
         ("2024-03-14",    "2024-03-14"),
         ("14032024",      "2024-03-14"),
-        ("12/0B/2002",    None),          # corrupted — cannot parse
+        ("12/0B/2002",    None),          # corrupted - cannot parse
         ("not a date",    None),
     ]
     for raw, expected in date_cases:
         result = normalize_date(raw)
-        status = "✓" if result == expected else f"✗ got {result}"
+        status = "PASS" if result == expected else f"FAIL got {result}"
         print(f"  {raw:<20} → {str(result):<14} {status}")
 
     print("\n" + "=" * 60)
-    print("PART 2 — Number normalization")
+    print("PART 2 - Number normalization")
     print("=" * 60)
 
     num_cases = [
@@ -475,18 +475,18 @@ if __name__ == "__main__":
         ("5,000 INR",  5000.0),
         ("₹ 5000",     5000.0),
         ("368.16",     368.16),
-        ("S,OOO",      None),     # OCR-corrupted — can't parse
+        ("S,OOO",      None),     # OCR-corrupted - can't parse
         ("2 lakh",     200000.0),
         ("1.5 crore",  15000000.0),
         (5000,         5000.0),
     ]
     for raw, expected in num_cases:
         result = normalize_number(raw)
-        status = "✓" if result == expected else f"✗ got {result}"
+        status = "PASS" if result == expected else f"FAIL got {result}"
         print(f"  {str(raw):<20} → {str(result):<14} {status}")
 
     print("\n" + "=" * 60)
-    print("PART 3 — Currency code normalization")
+    print("PART 3 - Currency code normalization")
     print("=" * 60)
 
     curr_cases = [
@@ -501,11 +501,11 @@ if __name__ == "__main__":
     ]
     for raw, expected in curr_cases:
         result = normalize_currency_code(raw)
-        status = "✓" if result == expected else f"✗ got {result}"
+        status = "PASS" if result == expected else f"FAIL got {result}"
         print(f"  {raw:<12} → {str(result):<8} {status}")
 
     print("\n" + "=" * 60)
-    print("PART 4 — Full struct normalization (insurance)")
+    print("PART 4 - Full struct normalization (insurance)")
     print("=" * 60)
 
     import json as _json
@@ -534,17 +534,17 @@ if __name__ == "__main__":
     print(_json.dumps(normalized, indent=2))
 
     print("\n" + "=" * 60)
-    print("PART 5 — Time and phone normalization")
+    print("PART 5 - Time and phone normalization")
     print("=" * 60)
 
     time_cases = [("09:15", "09:15"), ("9:15 AM", "09:15"), ("21:30", "21:30"), ("9.15pm", "21:15")]
     for raw, expected in time_cases:
         result = normalize_time(raw)
-        status = "✓" if result == expected else f"✗ got {result}"
+        status = "PASS" if result == expected else f"FAIL got {result}"
         print(f"  time  {raw:<12} → {str(result):<8} {status}")
 
     phone_cases = [("9876543210", "9876543210"), ("+919876543210", "9876543210"), ("98765", None)]
     for raw, expected in phone_cases:
         result = normalize_phone(raw)
-        status = "✓" if result == expected else f"✗ got {result}"
+        status = "PASS" if result == expected else f"FAIL got {result}"
         print(f"  phone {raw:<16} → {str(result):<12} {status}")

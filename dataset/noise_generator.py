@@ -5,16 +5,16 @@ The synthetic noise injection engine. Takes clean serialized text from
 serializer.py and corrupts it to simulate real OCR errors.
 
 Architecture (4 layers):
-    1. Noise Selector  — picks which noise functions to apply based on difficulty
-    2. Noise Applicator — applies Tier 1-2 sequentially, Tier 3-4 independently
-    3. Noise Functions  — one function per noise tag, all self-contained
-    4. Validator        — ensures the result meets difficulty requirements
+    1. Noise Selector  - picks which noise functions to apply based on difficulty
+    2. Noise Applicator - applies Tier 1-2 sequentially, Tier 3-4 independently
+    3. Noise Functions  - one function per noise tag, all self-contained
+    4. Validator        - ensures the result meets difficulty requirements
 
 Noise tiers:
     Tier 1: Character-level  (sequential)
     Tier 2: Structure-level  (sequential)
-    Tier 3: Numeric/Date     (independent — applied to original text, merged in)
-    Tier 4: Hallucination    (independent — appended/injected at line level)
+    Tier 3: Numeric/Date     (independent - applied to original text, merged in)
+    Tier 4: Hallucination    (independent - appended/injected at line level)
 """
 
 import json
@@ -37,9 +37,9 @@ GEN_CONFIG    = _load_json("generation_config.json")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TIER 1 — Character-level noise functions
+# TIER 1 - Character-level noise functions
 # Each takes (text, rng, rate_cfg) and returns (corrupted_text, tag)
-# Applied SEQUENTIALLY — output of one feeds the next
+# Applied SEQUENTIALLY - output of one feeds the next
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _apply_char_O0(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str, str]:
@@ -70,7 +70,7 @@ def _apply_char_l1I(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str,
 
 
 def _apply_char_B8(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str, str]:
-    """Confuse B↔8 — common in alphanumeric IDs and names."""
+    """Confuse B↔8 - common in alphanumeric IDs and names."""
     rate = rng.uniform(rate_cfg["min"], rate_cfg["max"])
     result = []
     for char in text:
@@ -99,7 +99,7 @@ def _apply_char_S5(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str, 
 
 def _apply_char_sub(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str, str]:
     """Randomly substitute 1-2 alphabetic characters per line with a nearby key."""
-    # Nearby keys on a QWERTY layout — simulates OCR misread of similar shapes
+    # Nearby keys on a QWERTY layout - simulates OCR misread of similar shapes
     nearby = {
         "a": "sq", "b": "vn", "c": "xv", "d": "sf", "e": "wr",
         "f": "dg", "g": "fh", "h": "gj", "i": "uo", "j": "hk",
@@ -113,7 +113,7 @@ def _apply_char_sub(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str,
     result_lines = []
     for line in lines:
         chars = list(line)
-        # Only touch value side — skip the key label (before first colon/separator)
+        # Only touch value side - skip the key label (before first colon/separator)
         sep_idx = _find_separator_idx(line)
         eligible = [
             i for i, c in enumerate(chars)
@@ -166,7 +166,7 @@ def _apply_char_transpose(text: str, rng: random.Random, rate_cfg: dict) -> tupl
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TIER 2 — Structure-level noise functions
+# TIER 2 - Structure-level noise functions
 # Applied SEQUENTIALLY after Tier 1
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -177,7 +177,7 @@ def _apply_missing_colon(text: str, rng: random.Random, rate_cfg: dict) -> tuple
     result_lines = []
     for line in lines:
         if line and rng.random() < rate:
-            # Remove colon/separator — leave a space between key and value
+            # Remove colon/separator - leave a space between key and value
             line = re.sub(r"\s*[:]\s*", " ", line, count=1)
         result_lines.append(line)
     return "\n".join(result_lines), "missing_colon"
@@ -232,7 +232,7 @@ def _apply_key_abbrev(text: str, rng: random.Random, rate_cfg: dict, domain: str
     abbrev_map: dict[str, list[str]] = {}
     for field, variants in DOMAINS[domain]["key_label_variants"].items():
         if len(variants) > 1:
-            # First variant is usually the "full" form — rest are abbreviations
+            # First variant is usually the "full" form - rest are abbreviations
             full = variants[0]
             abbrevs = [v for v in variants[1:] if len(v) <= len(full)]
             if abbrevs:
@@ -254,7 +254,7 @@ def _apply_key_abbrev(text: str, rng: random.Random, rate_cfg: dict, domain: str
 
 
 def _apply_value_truncated(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str, str]:
-    """Cut a string value off near the end — simulates line-end OCR truncation."""
+    """Cut a string value off near the end - simulates line-end OCR truncation."""
     lines = text.split("\n")
     eligible = []
     for i, line in enumerate(lines):
@@ -288,7 +288,7 @@ def _apply_delimiter_swap(text: str, rng: random.Random, rate_cfg: dict) -> tupl
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TIER 3 — Numeric / Date noise functions
+# TIER 3 - Numeric / Date noise functions
 # Applied INDEPENDENTLY on the original text, results merged into Tier 1-2 output
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -380,8 +380,8 @@ def _apply_date_partial(text: str, rng: random.Random, rate_cfg: dict) -> tuple[
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# TIER 4 — Hallucination trap functions (extreme difficulty only)
-# Applied INDEPENDENTLY — operate at line level, append/inject into text
+# TIER 4 - Hallucination trap functions (extreme difficulty only)
+# Applied INDEPENDENTLY - operate at line level, append/inject into text
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _apply_extraneous_field(text: str, rng: random.Random, rate_cfg: dict, domain: str) -> tuple[str, str]:
@@ -402,7 +402,7 @@ def _apply_ghost_value(
 ) -> tuple[str, str]:
     """
     Replace a real field's value in the OCR text with a plausible but wrong value.
-    The gt_struct remains correct — the model must not copy the ghost value.
+    The gt_struct remains correct - the model must not copy the ghost value.
     """
     lines = text.split("\n")
     # Find lines that have a separator (key: value structure)
@@ -415,7 +415,7 @@ def _apply_ghost_value(
     sep_idx = _find_separator_idx(line)
     key_part = line[:sep_idx+1]
 
-    # Generate a plausible ghost value — scramble the real value
+    # Generate a plausible ghost value - scramble the real value
     value_part = line[sep_idx+1:].strip()
     ghost = _scramble_value(value_part, rng)
     lines[idx] = key_part + " " + ghost
@@ -544,7 +544,7 @@ def _scramble_value(value: str, rng: random.Random) -> str:
             chars[idx] = str((int(chars[idx]) + rng.randint(1, 5)) % 10)
         return "".join(chars)
 
-    # String — shuffle middle characters
+    # String - shuffle middle characters
     if len(value) > 4:
         mid = list(value[1:-1])
         rng.shuffle(mid)
@@ -554,7 +554,7 @@ def _scramble_value(value: str, rng: random.Random) -> str:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# LAYER 1 — Noise Selector
+# LAYER 1 - Noise Selector
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _select_noise_functions(
@@ -647,7 +647,7 @@ def _select_noise_functions(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# LAYER 2 — Noise Applicator
+# LAYER 2 - Noise Applicator
 # ══════════════════════════════════════════════════════════════════════════════
 
 # Dispatch table mapping tag names to functions
@@ -754,7 +754,7 @@ def _apply_tier_4(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# LAYER 4 — Validator
+# LAYER 4 - Validator
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _validate(
@@ -824,7 +824,7 @@ def generate_noise(
         gt_struct:  Original clean dict (needed for Tier 4 ghost_value)
 
     Returns:
-        (corrupted_text, noise_tags) — the noisy OCR string and list of applied tags
+        (corrupted_text, noise_tags) - the noisy OCR string and list of applied tags
     """
     max_retries = GEN_CONFIG["validator_settings"]["max_retries"]
 
@@ -841,12 +841,12 @@ def generate_noise(
         # Apply Tier 3 independently
         text, applied_3 = _apply_tier_3(raw_text, text, tags_3, attempt_rng)
 
-        # Apply Tier 4 independently (extreme only — selector returns [] otherwise)
+        # Apply Tier 4 independently (extreme only - selector returns [] otherwise)
         text, applied_4 = _apply_tier_4(text, tags_4, domain, attempt_rng, gt_struct)
 
         all_tags = applied_1_2 + applied_3 + applied_4
 
-        # Validate — retry if invalid
+        # Validate - retry if invalid
         if _validate(raw_text, text, difficulty, domain, gt_struct):
             return text, all_tags
 

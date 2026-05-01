@@ -1,7 +1,7 @@
 """
 runners/multi_run.py
 
-Orchestrates a full evaluation run — iterates samples, formats prompts,
+Orchestrates a full evaluation run - iterates samples, formats prompts,
 calls the LLM, and writes results to disk incrementally.
 
 Responsibilities:
@@ -15,9 +15,9 @@ Responsibilities:
 
 Output structure:
     runs/{model_name}_{timestamp}/
-        predictions.jsonl   — one line per sample, written as it completes
-        run_config.json     — frozen config snapshot for this run
-        call_log.jsonl      — one CallRecord per sample
+        predictions.jsonl   - one line per sample, written as it completes
+        run_config.json     - frozen config snapshot for this run
+        call_log.jsonl      - one CallRecord per sample
 """
 
 import json
@@ -112,7 +112,7 @@ def _make_prediction_record(
 ) -> dict:
     """
     Assemble the prediction record written to predictions.jsonl.
-    Contains everything needed by the evaluator — no re-loading required.
+    Contains everything needed by the evaluator - no re-loading required.
     """
     return {
         # Sample identity
@@ -130,7 +130,7 @@ def _make_prediction_record(
         "success":      call_record.success,
         "error":        call_record.error,
 
-        # Raw model output (unparsed — evaluator handles parsing)
+        # Raw model output (unparsed - evaluator handles parsing)
         "model_output": model_output,
 
         # Ground truth and OCR text (evaluator needs these)
@@ -198,10 +198,10 @@ def run(
         domain:     Optional domain filter.
         difficulty: Optional difficulty filter.
         task:       Optional task filter.
-        n:          Optional — evaluate only N samples (for quick checks).
+        n:          Optional - evaluate only N samples (for quick checks).
         dry_run:    If True, skip actual API calls and use mock outputs.
         resume:     If True, skip samples already in predictions.jsonl.
-        run_dir:    Optional — provide an existing run dir to resume into.
+        run_dir:    Optional - provide an existing run dir to resume into.
 
     Returns:
         Path to the run directory containing predictions.jsonl.
@@ -212,7 +212,7 @@ def run(
     if run_dir is None:
         # Auto-resume: look for an existing partial run for this model
         # Match any run folder for this model that has partial predictions
-        # Use a loose prefix match — folder name uses whatever sanitization _make_run_dir applied
+        # Use a loose prefix match - folder name uses whatever sanitization _make_run_dir applied
         model_prefix = re.sub(r"[^\w]", "_", model_cfg["name"])  # same as _make_run_dir
         existing = sorted(
             [d for d in _RUNS_DIR.iterdir()
@@ -255,7 +255,7 @@ def run(
         completed_ids = _load_completed_ids(predictions_path)
         skipped = len([s for s in samples if s["id"] in completed_ids])
         if skipped:
-            print(f"Resuming — skipping {skipped} already-completed samples.")
+            print(f"Resuming - skipping {skipped} already-completed samples.")
 
     todo = [s for s in samples if s["id"] not in completed_ids]
 
@@ -300,12 +300,12 @@ def run(
                     model_cfg=model_cfg,
                 )
 
-            # Check for rate limit — stop immediately, don't save as failure
+            # Check for rate limit - stop immediately, don't save as failure
             if not call_record.success and call_record.error:
                 err = call_record.error.lower()
                 is_rate_limit = any(kw in err for kw in ["rate limit", "429", "too many requests", "quota", "tokens per day", "tokens per minute"])
                 if is_rate_limit:
-                    print(f"\n  Rate limit hit on sample {i}/{len(todo)} — stopping to avoid saving failed records.")
+                    print(f"\n  Rate limit hit on sample {i}/{len(todo)} - stopping to avoid saving failed records.")
                     print(f"  Re-run the same command tomorrow to resume from sample {i}.")
                     print(f"  ({i-1} samples saved successfully)")
                     break
@@ -315,7 +315,7 @@ def run(
                 sample, model_output, prompt_hash, call_record
             )
             pred_f.write(json.dumps(pred_record, ensure_ascii=False) + "\n")
-            pred_f.flush()  # Ensure it hits disk — crash-safe
+            pred_f.flush()  # Ensure it hits disk - crash-safe
 
             # Write call log
             log_f.write(json.dumps(call_record.to_dict()) + "\n")
@@ -330,7 +330,7 @@ def run(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PREDICTIONS READER — for evaluator use
+# PREDICTIONS READER - for evaluator use
 # ══════════════════════════════════════════════════════════════════════════════
 
 def load_predictions(run_dir: Path) -> list[dict]:
@@ -356,7 +356,7 @@ def load_predictions(run_dir: Path) -> list[dict]:
             try:
                 records.append(json.loads(line))
             except json.JSONDecodeError as e:
-                raise ValueError(f"Malformed JSON at predictions.jsonl:{line_num} — {e}")
+                raise ValueError(f"Malformed JSON at predictions.jsonl:{line_num} - {e}")
     return records
 
 
@@ -367,7 +367,7 @@ def load_predictions(run_dir: Path) -> list[dict]:
 if __name__ == "__main__":
 
     print("=" * 60)
-    print("PART 1 — Dry run: all test samples, all domains")
+    print("PART 1 - Dry run: all test samples, all domains")
     print("=" * 60)
 
     run_dir = run(
@@ -378,7 +378,7 @@ if __name__ == "__main__":
 
     print()
     print("=" * 60)
-    print("PART 2 — Load and inspect predictions")
+    print("PART 2 - Load and inspect predictions")
     print("=" * 60)
 
     predictions = load_predictions(run_dir)
@@ -404,7 +404,7 @@ if __name__ == "__main__":
 
     print()
     print("=" * 60)
-    print("PART 3 — Dry run: single domain, single difficulty")
+    print("PART 3 - Dry run: single domain, single difficulty")
     print("=" * 60)
 
     run(
@@ -417,7 +417,7 @@ if __name__ == "__main__":
 
     print()
     print("=" * 60)
-    print("PART 4 — run_config.json contents")
+    print("PART 4 - run_config.json contents")
     print("=" * 60)
 
     with open(run_dir / "run_config.json", encoding="utf-8") as f:

@@ -10,7 +10,7 @@ Responsibilities:
 - Randomize line ordering within each section
 - Write dates in a non-ISO format (noise engine may corrupt further)
 - Write numbers with thousand-separator commas
-- Never apply noise — that is strictly the noise engine's job
+- Never apply noise - that is strictly the noise engine's job
 
 The output of this module is what the noise engine receives as input.
 """
@@ -37,7 +37,7 @@ DOMAINS = _load_domains()
 # We intentionally avoid ISO here so the model always has to normalize.
 
 _DATE_PREFORMATS = [
-    "%d/%m/%Y",    # 14/03/2024  — most common in India
+    "%d/%m/%Y",    # 14/03/2024  - most common in India
     "%d-%m-%Y",    # 14-03-2024
     "%d %b %Y",    # 14 Mar 2024
     "%d/%m/%y",    # 14/03/24
@@ -59,7 +59,7 @@ def _format_number(value: Any) -> str:
     try:
         f = float(value)
         if f == int(f):
-            # Whole number — no decimal
+            # Whole number - no decimal
             return f"{int(f):,}"
         else:
             return f"{f:,.2f}"
@@ -108,15 +108,15 @@ def _flatten_struct(
         schema_node = schema.get(key, {})
 
         if value is None:
-            # Optional field absent — do not emit a line for it
+            # Optional field absent - do not emit a line for it
             continue
 
         if isinstance(value, dict):
-            # Nested section — recurse
+            # Nested section - recurse
             child_rows = _flatten_struct(value, domain, schema_node, rng, prefix=field_path)
             rows.extend(child_rows)
         else:
-            # Leaf field — determine field type from schema and format value
+            # Leaf field - determine field type from schema and format value
             field_type = schema_node.get("type", "string")
             label = _pick_label(field_path, domain, rng)
 
@@ -223,8 +223,8 @@ if __name__ == "__main__":
             "name":           "Ashwin Shetty",
             "dob":            "2002-08-12",
             "gender":         "Male",
-            "contact_number": None,   # absent — will be omitted
-            "address":        None    # absent — will be omitted
+            "contact_number": None,   # absent - will be omitted
+            "address":        None    # absent - will be omitted
         },
         "policy": {
             "policy_number": "P1-093482",

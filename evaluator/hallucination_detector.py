@@ -1,7 +1,7 @@
 """
 evaluator/hallucination_detector.py
 
-Identifies fields in pred_struct that the model invented —
+Identifies fields in pred_struct that the model invented -
 not derivable from ocr_text and not in gt_struct.
 
 A predicted value is considered "derivable from OCR" if a
@@ -38,7 +38,7 @@ FUZZY_THRESHOLD = _EVAL_CFG["thresholds"]["hallucination_fuzzy_match_threshold"]
 def _fuzzy_ratio(a: str, b: str) -> float:
     """
     Compute a similarity ratio between two strings using a sliding window.
-    Approximates rapidfuzz.partial_ratio — finds the best matching substring
+    Approximates rapidfuzz.partial_ratio - finds the best matching substring
     of the longer string against the shorter string.
 
     Returns a score 0–100 (matches rapidfuzz convention).
@@ -71,7 +71,7 @@ def _fuzzy_ratio(a: str, b: str) -> float:
 def _value_in_ocr(value: Any, ocr_text: str, threshold: float) -> bool:
     """
     Check if a predicted value is derivable from the OCR text.
-    Uses fuzzy substring matching — threshold from eval_config.json.
+    Uses fuzzy substring matching - threshold from eval_config.json.
     """
     if value is None:
         return True   # None is never hallucinated
@@ -200,8 +200,8 @@ if __name__ == "__main__":
         "Polcy No: P1-0934B2\n"
         "Amount: 5,O00\n"
         "Currency: INR\n"
-        "Nominee: N/A\n"         # extraneous field — in OCR but not in schema
-        "Branch Code: 4421\n"    # extraneous field — in OCR but not in schema
+        "Nominee: N/A\n"         # extraneous field - in OCR but not in schema
+        "Branch Code: 4421\n"    # extraneous field - in OCR but not in schema
     )
 
     gt = {
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     }
 
     cases = [
-        ("Clean prediction — no hallucinations", {
+        ("Clean prediction - no hallucinations", {
             "policyholder": {"name": "ashwin shetty", "dob": "2002-08-12", "gender": "male"},
             "policy":       {"policy_number": "p1-093482"},
             "premium":      {"amount": 5000.0, "currency": "INR"},
@@ -226,13 +226,13 @@ if __name__ == "__main__":
             "premium":      {"amount": 5000.0, "currency": "INR"},
             "nominee":      "N/A",          # in OCR but not in schema → found in OCR, not hallucinated
         }),
-        ("Fully invented field — not in OCR or GT", {
+        ("Fully invented field - not in OCR or GT", {
             "policyholder": {"name": "ashwin shetty", "dob": "2002-08-12"},
             "policy":       {"policy_number": "p1-093482"},
             "premium":      {"amount": 5000.0, "currency": "INR"},
-            "policyholder.contact_number": "9999999999",  # invented — not in OCR
+            "policyholder.contact_number": "9999999999",  # invented - not in OCR
         }),
-        ("Ghost value — wrong value for real field", {
+        ("Ghost value - wrong value for real field", {
             "policyholder": {"name": "ashwin shetty", "dob": "2002-08-12"},
             "policy":       {"policy_number": "p1-000000"},  # not in OCR, not in GT
             "premium":      {"amount": 5000.0, "currency": "INR"},

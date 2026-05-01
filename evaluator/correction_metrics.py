@@ -15,7 +15,7 @@ Range:
     <0.0 → regression (LLM made it worse than raw OCR)
 
 Fields where ocr_distance == 0 (OCR was already correct) are excluded
-from the mean — the LLM had nothing to correct.
+from the mean - the LLM had nothing to correct.
 
 This metric requires raw_text from generation_meta (stored in prediction records).
 """
@@ -104,7 +104,7 @@ def compute_field_correction(
     llm_distance = levenshtein(pred_str, gt_str)
 
     if raw_ocr_value is None:
-        # Can't compute OCR distance — field not found in OCR text
+        # Can't compute OCR distance - field not found in OCR text
         return {
             "skipped":      True,
             "reason":       "field not found in ocr_text",
@@ -115,7 +115,7 @@ def compute_field_correction(
     ocr_distance = levenshtein(ocr_str, gt_str)
 
     if ocr_distance == 0:
-        # OCR was already correct — no correction needed, skip from mean
+        # OCR was already correct - no correction needed, skip from mean
         return {
             "skipped":        True,
             "reason":         "ocr_already_correct",
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     with open(Path(__file__).parent.parent / "config" / "domains.json") as f:
         domains_cfg = json.load(f)
 
-    # Simulated OCR text (what the model received — noisy)
+    # Simulated OCR text (what the model received - noisy)
     ocr_text = (
         "Namc: Ashwln 5hetty\n"
         "D08: 12/08/2002\n"
@@ -235,7 +235,7 @@ if __name__ == "__main__":
         "ID: RV-221\n"
     )
 
-    # Raw text (clean, before noise — stored in generation_meta)
+    # Raw text (clean, before noise - stored in generation_meta)
     raw_text = (
         "Name: Ashwin Shetty\n"
         "DOB: 12/08/2002\n"
@@ -269,7 +269,7 @@ if __name__ == "__main__":
             "policy":       {"policy_number": "p1-093482"},
             "premium":      {"amount": 5000.0, "currency": "INR"},
         }),
-        ("Regression — LLM made it worse", {
+        ("Regression - LLM made it worse", {
             "policyholder": {"name": "xyz completely wrong", "dob": "1900-01-01"},
             "policy":       {"policy_number": "xx-000000"},
             "premium":      {"amount": 9999.0, "currency": "USD"},

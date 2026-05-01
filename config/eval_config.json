@@ -3,14 +3,14 @@
   "_version": "1.0.0",
 
   "model": {
-    "_comment": "Active model for this run. Override per run — do not change the defaults here.",
+    "_comment": "Active model for this run. Override per run - do not change the defaults here.",
     "name": "gpt-4o-2024-08-06",
     "backend": "openai",
     "_backend_options": ["openai", "anthropic", "ollama", "llama_cpp"],
     "temperature": 0,
     "max_tokens": 1024,
     "api_key_env_var": "OPENAI_API_KEY",
-    "_api_note": "API key is read from environment variable — never hardcoded."
+    "_api_note": "API key is read from environment variable - never hardcoded."
   },
 
   "supported_models": {
@@ -87,7 +87,7 @@
     "string_lowercase_before_compare": true,
 
     "abbreviation_expansions": {
-      "_comment": "Shared lookup used by both key_abbrev noise function and string normalizer — must stay in sync.",
+      "_comment": "Shared lookup used by both key_abbrev noise function and string normalizer - must stay in sync.",
       "addr":    "address",
       "dept":    "department",
       "dob":     "date of birth",

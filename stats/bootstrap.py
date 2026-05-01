@@ -4,10 +4,10 @@ stats/bootstrap.py
 Computes confidence intervals and statistical significance tests.
 
 Functions:
-    bootstrap_ci()        — 95% bootstrap CI for a list of values
-    compare_models()      — Wilcoxon signed-rank test for paired model scores
-    is_significant()      — Simple CI overlap check for quick screening
-    full_comparison()     — Full comparison report between two model result sets
+    bootstrap_ci()        - 95% bootstrap CI for a list of values
+    compare_models()      - Wilcoxon signed-rank test for paired model scores
+    is_significant()      - Simple CI overlap check for quick screening
+    full_comparison()     - Full comparison report between two model result sets
 """
 
 from __future__ import annotations
@@ -93,7 +93,7 @@ def bootstrap_ci(
 
 
 def ci_overlaps(ci_a: dict, ci_b: dict) -> bool:
-    """Return True if two CIs overlap — indicates no clear winner."""
+    """Return True if two CIs overlap - indicates no clear winner."""
     if None in (ci_a.get("ci_lower"), ci_a.get("ci_upper"),
                 ci_b.get("ci_lower"), ci_b.get("ci_upper")):
         return True
@@ -137,7 +137,7 @@ def wilcoxon_signed_rank(
         return {
             "W_statistic": 0.0, "z_score": 0.0, "p_value": 1.0,
             "significant": False, "effect_size": 0.0, "n_pairs": 0,
-            "note": "All differences are zero — models are identical on these samples",
+            "note": "All differences are zero - models are identical on these samples",
         }
 
     if n < 10:
@@ -317,7 +317,7 @@ def print_comparison(comparison: dict) -> None:
         )
         w = result["wilcoxon"]
         if w.get("p_value") is not None:
-            sig = "✓" if w["significant"] else "✗"
+            sig = "yes" if w["significant"] else "no"
             print(f"    {'':26} Wilcoxon: p={w['p_value']}  sig={sig}  "
                   f"effect_size={w['effect_size']}")
 
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     records_llama = make_records(N, base=0.74, noise=0.09, seed=2)  # weaker model
 
     print("=" * 65)
-    print("PART 1 — Bootstrap CI for GPT-4o field_f1")
+    print("PART 1 - Bootstrap CI for GPT-4o field_f1")
     print("=" * 65)
     from stats.aggregator import _extract_metrics
     scores_gpt = [_extract_metrics(r)["field_f1"] for r in records_gpt if _extract_metrics(r)["field_f1"] is not None]
@@ -386,7 +386,7 @@ if __name__ == "__main__":
     print(f"  n     : {ci['n']}")
 
     print("\n" + "=" * 65)
-    print("PART 2 — Full model comparison")
+    print("PART 2 - Full model comparison")
     print("=" * 65)
     comparison = full_comparison(records_gpt, records_llama, "GPT-4o", "Llama-8B")
     print_comparison(comparison)

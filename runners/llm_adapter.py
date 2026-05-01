@@ -9,14 +9,14 @@ Supported backends:
     - anthropic : Anthropic API (Claude)
     - ollama    : Local models via Ollama HTTP endpoint
     - llama_cpp : Local models via llama-cpp-python HTTP server
-    - hardcoded : For baselines (always_null, regex_rules) — no API call
+    - hardcoded : For baselines (always_null, regex_rules) - no API call
 
 Responsibilities:
     - Send a prompt, receive raw string response
     - Handle rate limit retries with exponential backoff
     - Log every call: timestamp, model, prompt hash, latency, response length
     - Read temperature + max_tokens strictly from eval_config.json
-    - Never expose API keys — always read from environment variables
+    - Never expose API keys - always read from environment variables
 
 Does NOT:
     - Parse model output
@@ -53,7 +53,7 @@ EVAL_CONFIG = _load_eval_config()
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CALL RECORD — what gets logged for every API call
+# CALL RECORD - what gets logged for every API call
 # ══════════════════════════════════════════════════════════════════════════════
 
 @dataclass
@@ -138,7 +138,7 @@ def _call_ollama(prompt: str, model_cfg: dict) -> str:
     try:
         import urllib.request
     except ImportError:
-        raise ImportError("urllib is part of the standard library — this should not happen.")
+        raise ImportError("urllib is part of the standard library - this should not happen.")
 
     base_url = model_cfg.get("base_url", "http://localhost:11434")
     payload = json.dumps({
@@ -303,7 +303,7 @@ def call(
     except Exception as e:
         success   = False
         error_msg = f"{type(e).__name__}: {e}"
-        log.error(f"[{sample_id}] FAILED after {max_retries} retries — {error_msg}")
+        log.error(f"[{sample_id}] FAILED after {max_retries} retries - {error_msg}")
 
     latency_ms = int((time.perf_counter() - start) * 1000)
 
@@ -348,7 +348,7 @@ def build_model_cfg(run_id: str) -> dict:
 
 if __name__ == "__main__":
     """
-    Dry-run demo — does NOT make real API calls.
+    Dry-run demo - does NOT make real API calls.
     Shows how call() would be invoked and what a CallRecord looks like.
     Replace the mock with a real call() invocation once API keys are set.
     """
@@ -367,7 +367,7 @@ if __name__ == "__main__":
     prompt, prompt_hash = build_prompt(sample)
 
     print("=" * 60)
-    print("DRY RUN — llm_adapter.call() demo")
+    print("DRY RUN - llm_adapter.call() demo")
     print("=" * 60)
     print(f"Sample ID   : {sample['id']}")
     print(f"Prompt hash : {prompt_hash}")

@@ -7,10 +7,10 @@ and renders a self-contained HTML report.
 
 Pipeline:
     runs/{model}_{ts}/predictions.jsonl
-        ↓  evaluate()     — runs all 5 evaluator modules per record
-        ↓  aggregate()    — groups stats by domain/difficulty
-        ↓  bootstrap_ci() — CIs per metric
-        ↓  render()       — writes self-contained HTML report
+        ↓  evaluate()     - runs all 5 evaluator modules per record
+        ↓  aggregate()    - groups stats by domain/difficulty
+        ↓  bootstrap_ci() - CIs per metric
+        ↓  render()       - writes self-contained HTML report
 
 Output:
     runs/{model}_{ts}/report.html
@@ -54,7 +54,7 @@ EVAL_CFG  = _load_json(_CONFIG_DIR / "eval_config.json")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 1 — EVALUATE ONE PREDICTION RECORD
+# STEP 1 - EVALUATE ONE PREDICTION RECORD
 # ══════════════════════════════════════════════════════════════════════════════
 
 def evaluate_record(record: dict) -> dict:
@@ -143,7 +143,7 @@ def _classify_failure_modes(record: dict) -> list[str]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 2 — EVALUATE ALL PREDICTIONS IN A RUN
+# STEP 2 - EVALUATE ALL PREDICTIONS IN A RUN
 # ══════════════════════════════════════════════════════════════════════════════
 
 def evaluate_run(run_dir: Path, verbose: bool = True) -> list[dict]:
@@ -178,7 +178,7 @@ def evaluate_run(run_dir: Path, verbose: bool = True) -> list[dict]:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# STEP 3 — RENDER HTML REPORT
+# STEP 3 - RENDER HTML REPORT
 # ══════════════════════════════════════════════════════════════════════════════
 
 _CSS = """
@@ -226,7 +226,7 @@ def _score_class(v: float | None, higher_better: bool = True) -> str:
 
 def _fmt(v: Any, decimals: int = 3) -> str:
     if v is None:
-        return "—"
+        return "-"
     if isinstance(v, float):
         return f"{v:.{decimals}f}"
     return str(v)
@@ -284,7 +284,7 @@ def render_report(
 
         mode_badges = "".join(
             f'<span class="failure-mode">{m}</span>' for m in modes
-        ) if modes else '<span style="color:#999">—</span>'
+        ) if modes else '<span style="color:#999">-</span>'
 
         sample_rows.append(
             f'<tr>'
@@ -294,7 +294,7 @@ def render_report(
             f'<td>{rec.get("task","")}</td>'
             f'<td class="{_score_class(f1)}">{_fmt(f1)}</td>'
             f'<td class="{_score_class(hr, higher_better=False)}">{_fmt(hr)}</td>'
-            f'<td>{"✓" if sv else "✗"}</td>'
+            f'<td>{"yes" if sv else "no"}</td>'
             f'<td>{ps}</td>'
             f'<td>{mode_badges}</td>'
             f'</tr>'
@@ -385,7 +385,7 @@ def render_report(
                 f'<td>{_fmt(cb["mean"])} ±{_fmt(cb["ci_width"],4)}</td>'
                 f'<td>{_fmt(result["mean_diff"],4)}</td>'
                 f'<td>{_fmt(w.get("p_value"),5)}</td>'
-                f'<td>{"✓" if sig else "✗"}</td>'
+                f'<td>{"yes" if sig else "no"}</td>'
                 f'<td><strong>{result["winner"]}</strong></td>'
                 f'</tr>'
             )
@@ -397,7 +397,7 @@ def render_report(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OCR Benchmark — {model_name}</title>
+<title>OCR Benchmark - {model_name}</title>
 <style>{_CSS}</style>
 </head>
 <body>
@@ -486,7 +486,7 @@ def render_report(
 </table>
 
 <p style="color:#aaa;font-size:0.8em;margin-top:32px;border-top:1px solid #eee;padding-top:8px">
-  OCR Benchmark v{EVAL_CFG.get('_version','1.0.0')} — Generated {time.strftime('%Y-%m-%d %H:%M UTC')}
+  OCR Benchmark v{EVAL_CFG.get('_version','1.0.0')} - Generated {time.strftime('%Y-%m-%d %H:%M UTC')}
 </p>
 
 </div>
@@ -619,7 +619,7 @@ if __name__ == "__main__":
         run_dir_a = Path(sys.argv[1])
     else:
         run_dir_a = all_runs[0]
-        print(f"No run specified — using most recent: {run_dir_a.name}")
+        print(f"No run specified - using most recent: {run_dir_a.name}")
 
     comparison_dir = None
     if len(sys.argv) >= 3:

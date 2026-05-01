@@ -125,8 +125,8 @@ llm_ocr_transformation_benchmark/
 **Requirements:** Python 3.10+. No ML libraries required — the entire pipeline runs on the standard library.
 
 ```bash
-git clone https://github.com/ashwin549/lore-benchmark
-cd llm-ocr-benchmark
+git clone https://github.com/Vespertil-Technologies/LORE-OCR-Benchmark.git
+cd LORE-OCR-Benchmark
 pip install -r requirements.txt
 ```
 
@@ -247,7 +247,7 @@ If you use LORE in your work, please cite:
 @misc{lore2026,
   title   = {LORE: LLM OCR Robustness Evaluation},
   year    = {2026},
-  url     = {https://github.com/ashwin549/lore-benchmark}
+  url     = {https://github.com/Vespertil-Technologies/LORE-OCR-Benchmark}
 }
 ```
 
