@@ -2,7 +2,7 @@
 stats/visuals.py
 
 Generates charts from aggregated benchmark results.
-No matplotlib or external plotting dependencies — produces:
+No matplotlib or external plotting dependencies - produces:
     1. ASCII bar charts for terminal output
     2. HTML/SVG charts embedded in the report
 
@@ -23,7 +23,7 @@ from typing import Any
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# ASCII CHARTS — for terminal/log output
+# ASCII CHARTS - for terminal/log output
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _bar(value: float, width: int = 30, fill: str = "█", empty: str = "░") -> str:
@@ -111,7 +111,7 @@ def ascii_comparison(
     b_name = comparison["model_b"]
     result = comparison["metrics"].get(metric, {})
     if "error" in result:
-        return f"  {metric}: ERROR — {result['error']}"
+        return f"  {metric}: ERROR - {result['error']}"
 
     ca = result["ci_a"]
     cb = result["ci_b"]
@@ -123,7 +123,7 @@ def ascii_comparison(
     ]
     w = result.get("wilcoxon", {})
     if w.get("p_value") is not None:
-        lines.append(f"  Wilcoxon p={w['p_value']}  sig={'✓' if w['significant'] else '✗'}  "
+        lines.append(f"  Wilcoxon p={w['p_value']}  sig={'yes' if w['significant'] else 'no'}  "
                      f"effect_size={w['effect_size']}")
     return "\n".join(lines)
 
@@ -249,7 +249,7 @@ def html_heatmap_table(
 
     rows = [
         f'<table style="border-collapse:collapse;font-family:monospace;font-size:12px">',
-        f'<caption style="font-weight:bold;padding:6px">{title} — {metric}</caption>',
+        f'<caption style="font-weight:bold;padding:6px">{title} - {metric}</caption>',
         '<tr><th style="padding:6px;border:1px solid #ccc">Domain</th>',
     ]
     for col in cols:
@@ -262,7 +262,7 @@ def html_heatmap_table(
         for col in cols:
             v    = col_data.get(col)
             bg   = _cell_color(v)
-            txt  = f"{v:.3f}" if v is not None else "—"
+            txt  = f"{v:.3f}" if v is not None else "-"
             rows.append(
                 f'<td style="padding:6px;border:1px solid #ccc;'
                 f'background:{bg};text-align:center;color:#111">{txt}</td>'
@@ -354,14 +354,14 @@ def html_comparison_chart(comparison: dict, metrics: list[str] | None = None) ->
         badge_color = "#4CAF50" if sig else "#9E9E9E"
         svg.append(f'<text x="{width_px - 6}" y="{y_base + bar_h}" '
                    f'text-anchor="end" fill="{badge_color}" font-size="10">'
-                   f'{"★" if sig else "≈"}</text>')
+                   f'{"*" if sig else "-"}</text>')
 
     svg.append('</svg>')
     return "\n".join(svg)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# CONVENIENCE — build all charts for one aggregate result
+# CONVENIENCE - build all charts for one aggregate result
 # ══════════════════════════════════════════════════════════════════════════════
 
 def build_all_charts(agg: dict, comparison: dict | None = None) -> dict[str, str]:
@@ -471,22 +471,22 @@ if __name__ == "__main__":
     charts = build_all_charts(agg_a, comp)
 
     print("=" * 60)
-    print("PART 1 — ASCII: F1 by difficulty")
+    print("PART 1 - ASCII: F1 by difficulty")
     print("=" * 60)
     print(charts["ascii_f1_by_difficulty"])
 
     print("\n" + "=" * 60)
-    print("PART 2 — ASCII: Domain × Difficulty heatmap")
+    print("PART 2 - ASCII: Domain × Difficulty heatmap")
     print("=" * 60)
     print(charts["ascii_heatmap"])
 
     print("\n" + "=" * 60)
-    print("PART 3 — ASCII: Model comparison")
+    print("PART 3 - ASCII: Model comparison")
     print("=" * 60)
     print(charts["ascii_comparison"])
 
     print("\n" + "=" * 60)
-    print("PART 4 — HTML chart sizes (bytes)")
+    print("PART 4 - HTML chart sizes (bytes)")
     print("=" * 60)
     for name, html in charts.items():
         if name.startswith("html"):
@@ -502,6 +502,6 @@ if __name__ == "__main__":
     )
     out_path.write_text(
         f"<!DOCTYPE html><html><body style='font-family:monospace;padding:20px'>"
-        f"<h2>OCR Benchmark — Chart Preview</h2>{html_body}</body></html>"
+        f"<h2>OCR Benchmark - Chart Preview</h2>{html_body}</body></html>"
     )
     print(f"\n  HTML preview written → {out_path}")

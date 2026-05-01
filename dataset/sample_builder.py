@@ -19,8 +19,8 @@ Responsibilities:
     - Assemble the complete sample dict
     - Generate unique sample IDs
     - Look up required_fields from domains.json
-    - Does NOT write to disk — that is loader/writer's job
-    - Does NOT know about splits — the dataset writer assigns those
+    - Does NOT write to disk - that is loader/writer's job
+    - Does NOT know about splits - the dataset writer assigns those
 """
 
 import json
@@ -108,16 +108,16 @@ def build_sample(
     # Derive a reproducible per-sample seed
     per_sample_seed = base_seed + sample_index
 
-    # Two separate RNGs — one for serializer, one for noise
+    # Two separate RNGs - one for serializer, one for noise
     # This ensures serializer randomness doesn't bleed into noise randomness
     serialize_rng = random.Random(per_sample_seed)
     noise_rng     = random.Random(per_sample_seed + 1_000_000)
     task_rng      = random.Random(per_sample_seed + 2_000_000)
 
-    # Step 1 — Serialize gt_struct → raw text
+    # Step 1 - Serialize gt_struct → raw text
     raw_text = serialize(gt_struct, domain, serialize_rng)
 
-    # Step 2 — Inject noise → corrupted OCR text + applied tags
+    # Step 2 - Inject noise → corrupted OCR text + applied tags
     corrupted_text, noise_tags = generate_noise(
         raw_text=raw_text,
         difficulty=difficulty,
@@ -126,10 +126,10 @@ def build_sample(
         gt_struct=gt_struct,
     )
 
-    # Step 3 — Assign task label
+    # Step 3 - Assign task label
     task = _assign_task(difficulty, task_rng)
 
-    # Step 4 — Assemble complete sample dict
+    # Step 4 - Assemble complete sample dict
     sample = {
         "id":              _make_id(domain, sample_index),
         "domain":          domain,
@@ -153,7 +153,7 @@ def build_sample(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# BATCH BUILDER — generates N samples for one (domain, difficulty) combination
+# BATCH BUILDER - generates N samples for one (domain, difficulty) combination
 # ══════════════════════════════════════════════════════════════════════════════
 
 def build_batch(
@@ -190,7 +190,7 @@ def build_batch(
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# DATASET WRITER — splits samples and writes JSONL files to disk
+# DATASET WRITER - splits samples and writes JSONL files to disk
 # ══════════════════════════════════════════════════════════════════════════════
 
 def write_dataset(
@@ -217,7 +217,7 @@ def write_dataset(
     Returns:
         Dict mapping split name → path of written file.
     """
-    # Shuffle before splitting — deterministic given the seed
+    # Shuffle before splitting - deterministic given the seed
     shuffled = samples[:]
     rng.shuffle(shuffled)
 
@@ -262,7 +262,7 @@ if __name__ == "__main__":
     """
     Run this to build the full benchmark dataset.
     Writes 36 JSONL files to data/ (3 domains × 4 difficulties × 3 splits).
-    1,200 samples total — each with a distinct gt_struct from gt_generator.py.
+    1,200 samples total - each with a distinct gt_struct from gt_generator.py.
 
     Usage:
         python dataset/sample_builder.py

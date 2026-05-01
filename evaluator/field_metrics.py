@@ -3,7 +3,7 @@ evaluator/field_metrics.py
 
 Computes precision, recall, and F1 for field presence and value correctness.
 
-Operates on normalized pred_struct and gt_struct — call normalizers.py first.
+Operates on normalized pred_struct and gt_struct - call normalizers.py first.
 Works on both flat (receipts) and nested (insurance, hospital) structures.
 
 Metrics produced:
@@ -46,7 +46,7 @@ def _f1(precision: float, recall: float) -> float:
 
 
 # Fields whose values must match exactly (case-sensitive, no fuzzy)
-# These are identifiers — a model cannot guess them from context
+# These are identifiers - a model cannot guess them from context
 _EXACT_ID_FIELDS = {
     "receipt_number", "policy.policy_number", "insurance.policy_number",
     "attending_physician.id", "agent.agent_id",
@@ -59,8 +59,8 @@ def _values_match(pred_val: Any, gt_val: Any, field_path: str = "") -> bool:
 
     Strictness rules:
     - ID fields (policy numbers, receipt numbers, doctor IDs):
-        case-sensitive exact string match — no tolerance at all
-    - Numbers: exact match after normalization — no percentage tolerance
+        case-sensitive exact string match - no tolerance at all
+    - Numbers: exact match after normalization - no percentage tolerance
     - Strings: case-insensitive, whitespace-normalized
     """
     if gt_val is None and pred_val is None:
@@ -68,15 +68,15 @@ def _values_match(pred_val: Any, gt_val: Any, field_path: str = "") -> bool:
     if gt_val is None or pred_val is None:
         return False
 
-    # ID fields — case-sensitive exact match, no tolerance
+    # ID fields - case-sensitive exact match, no tolerance
     if field_path in _EXACT_ID_FIELDS:
         return str(pred_val).strip() == str(gt_val).strip()
 
-    # Numeric comparison — exact after normalization (no % tolerance)
+    # Numeric comparison - exact after normalization (no % tolerance)
     if isinstance(gt_val, (int, float)) and isinstance(pred_val, (int, float)):
         return round(float(pred_val), 2) == round(float(gt_val), 2)
 
-    # String comparison — case-insensitive, whitespace-normalized
+    # String comparison - case-insensitive, whitespace-normalized
     pred_s = " ".join(str(pred_val).strip().lower().split())
     gt_s   = " ".join(str(gt_val).strip().lower().split())
     return pred_s == gt_s
@@ -107,7 +107,7 @@ def compute_field_metrics(
     pred_flat = _flatten(pred_struct)
     gt_flat   = _flatten(gt_struct)
 
-    # Remove None values from GT — optional fields absent from GT
+    # Remove None values from GT - optional fields absent from GT
     # are not expected to be predicted
     gt_present = {k: v for k, v in gt_flat.items() if v is not None}
     required_set = set(required_fields)

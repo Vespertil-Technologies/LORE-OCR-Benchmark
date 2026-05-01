@@ -132,7 +132,7 @@ def _check_required_fields(
 ) -> None:
     """
     Check that all required fields are present in pred_struct.
-    They may be null — but they must be present as keys.
+    They may be null - but they must be present as keys.
     """
     pred_flat = _flatten(pred_struct)
 
@@ -158,7 +158,7 @@ def validate_schema(
 
     Args:
         pred_struct:  The parsed prediction dict (from json_coercion.py).
-                      Not necessarily normalized — schema check happens first.
+                      Not necessarily normalized - schema check happens first.
         domain:       Domain name.
         parse_status: 'success', 'partial', or 'failure' (from json_coercion.py).
 
@@ -224,7 +224,7 @@ if __name__ == "__main__":
             "policyholder": {"name": "Ashwin Shetty", "dob": "2002-08-12"},
             "premium":      {"amount": 5000.0, "currency": "INR"},
         }),
-        ("Wrong type — amount as string", "insurance", "success", {
+        ("Wrong type - amount as string", "insurance", "success", {
             "policyholder": {"name": "Ashwin Shetty", "dob": "2002-08-12"},
             "policy":       {"policy_number": "P1-093482"},
             "premium":      {"amount": "five thousand", "currency": "INR"},
@@ -241,7 +241,7 @@ if __name__ == "__main__":
             "premium":      {"amount": 5000.0, "currency": "INR"},
             "nominee":      "N/A",
         }),
-        ("Parse failure — no further checks", "insurance", "failure", {}),
+        ("Parse failure - no further checks", "insurance", "failure", {}),
         ("Valid flat receipts prediction", "receipts", "success", {
             "vendor_name":  "SwiggyMart",
             "date":         "2024-03-14",
@@ -252,7 +252,7 @@ if __name__ == "__main__":
 
     for label, domain, parse_status, pred in cases:
         result = validate_schema(pred, domain, parse_status)
-        status = "✓ VALID" if result["schema_valid"] else "✗ INVALID"
+        status = "VALID" if result["schema_valid"] else "INVALID"
         print(f"\n{'─'*55}")
         print(f"Case: {label}")
         print(f"  {status}  ({result['n_violations']} violation(s))")

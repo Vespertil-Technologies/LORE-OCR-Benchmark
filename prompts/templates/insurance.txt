@@ -7,7 +7,7 @@ TARGET SCHEMA:
 
 RULES:
 1. Return ONLY a valid JSON object. No explanation, no markdown, no code fences.
-2. Your output must exactly match the nested schema structure above — do not flatten it.
+2. Your output must exactly match the nested schema structure above - do not flatten it.
 3. Required fields (policyholder.name, policyholder.dob, policy.policy_number, premium.amount, premium.currency) must always be present inside their correct nested section. Set to null if not found in the text.
 4. Optional fields must be OMITTED entirely if not present in the OCR text. Do not set them to null.
 5. Normalize all values:

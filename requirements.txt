@@ -1,5 +1,5 @@
 # Python 3.10+
-# No required dependencies — core pipeline runs on the standard library only.
+# No required dependencies - core pipeline runs on the standard library only.
 # Install the packages for whichever backends you plan to use:
 
 # openai>=1.0.0        # OpenAI models (GPT-4o) and OpenAI-compatible APIs (Groq)

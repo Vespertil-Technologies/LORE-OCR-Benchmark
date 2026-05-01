@@ -8,7 +8,7 @@ Responsibilities:
     - Filter by any combination of domain / difficulty / split / task / noise_tag
     - Validate every line is parseable JSON on load
     - Support sampling N random samples (for quick dev runs)
-    - Return samples as plain dicts — no framework dependencies
+    - Return samples as plain dicts - no framework dependencies
     - Generator mode for large files (memory efficient)
 
 Does NOT:
@@ -46,9 +46,9 @@ def discover_files(
 
     Args:
         data_dir:   Root data directory (e.g. Path("data/")).
-        domain:     Optional filter — 'receipts', 'insurance', or 'hospital'.
-        difficulty: Optional filter — 'easy', 'medium', 'hard', or 'extreme'.
-        split:      Optional filter — 'train', 'dev', or 'test'.
+        domain:     Optional filter - 'receipts', 'insurance', or 'hospital'.
+        difficulty: Optional filter - 'easy', 'medium', 'hard', or 'extreme'.
+        split:      Optional filter - 'train', 'dev', or 'test'.
 
     Returns:
         Sorted list of matching Path objects.
@@ -67,7 +67,7 @@ def discover_files(
     if split and split not in VALID_SPLITS:
         raise ValueError(f"Invalid split '{split}'. Must be one of: {VALID_SPLITS}")
 
-    # Build glob pattern — use wildcards for unspecified dimensions
+    # Build glob pattern - use wildcards for unspecified dimensions
     d  = domain     or "*"
     di = difficulty or "*"
     s  = split      or "*"
@@ -123,7 +123,7 @@ def iter_samples(
         difficulty: Optional difficulty filter.
         split:      Optional split filter.
         task:       Optional task filter.
-        noise_tags: Optional list of noise tags — yields only samples containing
+        noise_tags: Optional list of noise tags - yields only samples containing
                     ALL of the listed tags.
 
     Yields:
@@ -138,7 +138,7 @@ def iter_samples(
     files = discover_files(data_dir, domain, difficulty, split)
 
     if not files:
-        return  # No files matched — yield nothing
+        return  # No files matched - yield nothing
 
     for filepath in files:
         with open(filepath, encoding="utf-8") as f:
@@ -150,7 +150,7 @@ def iter_samples(
                     sample = json.loads(line)
                 except json.JSONDecodeError as e:
                     raise ValueError(
-                        f"Malformed JSON at {filepath}:{line_num} — {e}"
+                        f"Malformed JSON at {filepath}:{line_num} - {e}"
                     )
                 if _passes_filters(sample, task, noise_tags):
                     yield sample
@@ -261,15 +261,15 @@ if __name__ == "__main__":
 
     DATA_DIR = Path(__file__).parent.parent / "data"
 
-    # ── Part 1: Manifest — what's in the dataset ───────────────────────────
+    # ── Part 1: Manifest - what's in the dataset ───────────────────────────
     print("=" * 60)
-    print("PART 1 — Dataset manifest")
+    print("PART 1 - Dataset manifest")
     print("=" * 60)
     print_manifest(DATA_DIR)
 
     # ── Part 2: Load all test samples for one domain ───────────────────────
     print("=" * 60)
-    print("PART 2 — Load all insurance test samples")
+    print("PART 2 - Load all insurance test samples")
     print("=" * 60)
     samples = load_samples(DATA_DIR, domain="insurance", split="test")
     print(f"Loaded {len(samples)} samples")
@@ -280,7 +280,7 @@ if __name__ == "__main__":
 
     # ── Part 3: Filter by difficulty + task ────────────────────────────────
     print("\n" + "=" * 60)
-    print("PART 3 — Filter: hospital / extreme / hallucination task")
+    print("PART 3 - Filter: hospital / extreme / hallucination task")
     print("=" * 60)
     filtered = load_samples(
         DATA_DIR,
@@ -294,7 +294,7 @@ if __name__ == "__main__":
 
     # ── Part 4: Filter by noise tag ────────────────────────────────────────
     print("\n" + "=" * 60)
-    print("PART 4 — Filter by noise tag: only samples with 'conflicting_field'")
+    print("PART 4 - Filter by noise tag: only samples with 'conflicting_field'")
     print("=" * 60)
     tagged = load_samples(DATA_DIR, noise_tags=["conflicting_field"])
     print(f"Matched {len(tagged)} sample(s) containing 'conflicting_field'")
@@ -303,7 +303,7 @@ if __name__ == "__main__":
 
     # ── Part 5: Random subsample (n=3) for quick dev run ──────────────────
     print("\n" + "=" * 60)
-    print("PART 5 — Random subsample: n=3 from all test data")
+    print("PART 5 - Random subsample: n=3 from all test data")
     print("=" * 60)
     subsample = load_samples(DATA_DIR, split="test", n=3, seed=42)
     print(f"Sampled {len(subsample)} items:")
@@ -312,7 +312,7 @@ if __name__ == "__main__":
 
     # ── Part 6: Generator mode ─────────────────────────────────────────────
     print("\n" + "=" * 60)
-    print("PART 6 — Generator mode (memory efficient iteration)")
+    print("PART 6 - Generator mode (memory efficient iteration)")
     print("=" * 60)
     total = 0
     for sample in iter_samples(DATA_DIR, domain="receipts"):

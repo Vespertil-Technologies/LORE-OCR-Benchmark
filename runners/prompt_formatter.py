@@ -49,7 +49,7 @@ def _build_schema_string(domain: str) -> str:
     Shows the model exactly what fields to return and their types.
 
     For required fields: shows the field with its type.
-    For optional fields: shows the field with its type + "(optional — omit if absent)".
+    For optional fields: shows the field with its type + "(optional - omit if absent)".
     Null values are shown as null.
     """
     domain_cfg    = DOMAINS[domain]
@@ -76,7 +76,7 @@ def _build_schema_string(domain: str) -> str:
                 else:
                     result[key] = f"{field_type}{fmt_note} | omit if absent"
             elif isinstance(value, dict):
-                # Nested section — recurse
+                # Nested section - recurse
                 result[key] = _render_node(value, prefix=field_path)
 
         return result
@@ -130,7 +130,7 @@ def build_prompt(sample: dict) -> tuple[str, str]:
                 Must contain 'domain', 'task', and 'ocr_text'.
 
     Returns:
-        (prompt_string, prompt_hash) — the full prompt and its 8-char hash.
+        (prompt_string, prompt_hash) - the full prompt and its 8-char hash.
 
     Raises:
         FileNotFoundError: If the domain template file does not exist.
@@ -174,7 +174,7 @@ def build_prompt_from_parts(
     ocr_text: str,
 ) -> tuple[str, str]:
     """
-    Build a prompt directly from parts — useful for testing or ablation runs
+    Build a prompt directly from parts - useful for testing or ablation runs
     where you don't have a full sample dict.
 
     Returns:
@@ -196,7 +196,7 @@ if __name__ == "__main__":
     DATA_DIR = _BASE_DIR / "data"
 
     print("=" * 60)
-    print("PART 1 — Schema strings (what the model sees per domain)")
+    print("PART 1 - Schema strings (what the model sees per domain)")
     print("=" * 60)
 
     for domain in ["receipts", "insurance", "hospital"]:
@@ -204,7 +204,7 @@ if __name__ == "__main__":
         print(_build_schema_string(domain))
 
     print("\n" + "=" * 60)
-    print("PART 2 — Full prompt for one sample (insurance / hard)")
+    print("PART 2 - Full prompt for one sample (insurance / hard)")
     print("=" * 60)
 
     samples = load_samples(DATA_DIR, domain="insurance", difficulty="hard", split="test")
@@ -217,10 +217,10 @@ if __name__ == "__main__":
         print(f"\n{'-' * 40}")
         print(prompt)
     else:
-        print("No samples found — run sample_builder.py first.")
+        print("No samples found - run sample_builder.py first.")
 
     print("\n" + "=" * 60)
-    print("PART 3 — Same OCR text, all 5 task variants")
+    print("PART 3 - Same OCR text, all 5 task variants")
     print("=" * 60)
 
     if samples:

@@ -1,8 +1,8 @@
 {
-  "_comment": "These strings are injected into the {TASK_INSTRUCTION} placeholder in each domain template. One per task type. Keep them concise — the rules section of the template handles the detail.",
+  "_comment": "These strings are injected into the {TASK_INSTRUCTION} placeholder in each domain template. One per task type. Keep them concise - the rules section of the template handles the detail.",
   "extraction": "Extract all fields present in the OCR text and return them structured as the schema below.",
   "normalization": "Extract all fields and normalize every value to its canonical form: ISO dates, ISO currency codes, plain numbers without separators, standardized strings.",
   "correction": "The OCR text contains character-level errors. Correct them using context (e.g. O→0, l→1, B→8, S→5, missing letters) and return the corrected values structured as the schema below.",
   "hallucination": "Extract only fields that are genuinely present and derivable from the OCR text. Do not invent or infer values that are not clearly present. If unsure, return null rather than guess.",
-  "schema": "Extract all fields and return them structured exactly as the schema below — correct nesting, correct field names, correct value types. Pay close attention to the schema structure."
+  "schema": "Extract all fields and return them structured exactly as the schema below - correct nesting, correct field names, correct value types. Pay close attention to the schema structure."
 }

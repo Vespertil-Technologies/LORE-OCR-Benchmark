@@ -8,7 +8,7 @@ Usage:
     python validate_configs.py
 
 Expected output (if everything is correct):
-    [OK] domains.json loaded — 3 domains found
+    [OK] domains.json loaded - 3 domains found
     [OK] noise_weights.json loaded
     [OK] generation_config.json loaded
     [OK] eval_config.json loaded
@@ -61,7 +61,7 @@ def get_schema_leaf_paths(schema: dict, prefix: str = "") -> set:
             # It's a leaf field definition
             paths.add(full_key)
         elif isinstance(value, dict):
-            # It's a nested section — recurse
+            # It's a nested section - recurse
             paths.update(get_schema_leaf_paths(value, full_key))
     return paths
 
@@ -71,7 +71,7 @@ def get_schema_leaf_paths(schema: dict, prefix: str = "") -> set:
 def check_domains_loaded(domains: dict) -> None:
     domain_names = [k for k in domains if not k.startswith("_")]
     assert len(domain_names) == 3, f"Expected 3 domains, found {len(domain_names)}"
-    print(f"[OK] domains.json loaded — {len(domain_names)} domains found: {domain_names}")
+    print(f"[OK] domains.json loaded - {len(domain_names)} domains found: {domain_names}")
 
 
 def check_noise_applicability(nw: dict) -> None:
@@ -126,7 +126,7 @@ def check_abbreviation_consistency(domains: dict, ev: dict) -> None:
     The abbreviation_expansions in eval_config are also used by the noise
     engine's key_abbrev function. Check that every abbreviated key label
     found in domains key_label_variants has a corresponding expansion entry
-    (if it's more than one word it's OK to omit — only short abbrevs matter).
+    (if it's more than one word it's OK to omit - only short abbrevs matter).
     """
     eval_abbrevs = set(ev["normalization"]["abbreviation_expansions"].keys())
     # Collect all short (<=8 char, lowercase) label variants across all domains
@@ -139,7 +139,7 @@ def check_abbreviation_consistency(domains: dict, ev: dict) -> None:
                 if len(v) <= 8:
                     short_variants.add(v.lower())
 
-    # Warn (not fail) about missing expansions — some short labels are proper words
+    # Warn (not fail) about missing expansions - some short labels are proper words
     missing = short_variants - eval_abbrevs
     genuine_abbrevs = {m for m in missing if not m.replace(" ", "").isalpha() or len(m) <= 4}
     if genuine_abbrevs:
@@ -211,7 +211,7 @@ if __name__ == "__main__":
 #   python validate_configs.py
 #
 # You should see:
-#   [OK] domains.json loaded — 3 domains found: ['receipts', 'insurance', 'hospital']
+#   [OK] domains.json loaded - 3 domains found: ['receipts', 'insurance', 'hospital']
 #   [OK] noise_weights.json loaded
 #   [OK] generation_config.json loaded
 #   [OK] eval_config.json loaded
