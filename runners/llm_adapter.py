@@ -279,9 +279,12 @@ def call(
     backoff     = retry_cfg["backoff_base_seconds"]
 
     if backend == "hardcoded":
+        # Hardcoded baselines need the sample, not just the prompt.
+        # multi_run.run() routes them to runners.baselines directly.
         raise ValueError(
-            "Backend 'hardcoded' is for baseline models only. "
-            "Use baseline_runner.py for always_null and regex_rules."
+            "Backend 'hardcoded' must be invoked via runners.baselines.call_baseline. "
+            "Pass run_id='R00' or 'R01' to runners.multi_run.run() and the routing "
+            "is automatic."
         )
 
     if backend not in _BACKEND_DISPATCH:

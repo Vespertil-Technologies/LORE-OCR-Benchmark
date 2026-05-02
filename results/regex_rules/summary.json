@@ -1,0 +1,23 @@
+{
+  "model": "regex_rules",
+  "backend": "hardcoded",
+  "split": "dev",
+  "n_records": 240,
+  "timestamp_utc": "2026-05-02T08:22:57Z",
+  "metrics": {
+    "exact_match_rate": 0.3629,
+    "mean_ned": 0.4393,
+    "required_f1": 0.8085,
+    "hallucination_rate": 0.0425,
+    "schema_valid": 0.1542,
+    "parse_success": 1.0,
+    "mean_correction_gain": 0.0137
+  },
+  "failure_modes": {
+    "wrong_value": 209,
+    "hallucination": 47,
+    "schema_mismatch": 203,
+    "missing_required": 136,
+    "correction_regression": 98
+  }
+}

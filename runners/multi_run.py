@@ -29,6 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from dataset.loader import load_samples
+from runners.baselines import call_baseline
 from runners.llm_adapter import EVAL_CONFIG, CallRecord, build_model_cfg, call
 from runners.prompt_formatter import build_prompt
 
@@ -292,6 +293,21 @@ def run(
                     prompt_hash     = prompt_hash,
                     timestamp_utc   = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                     latency_ms      = 0,
+                    response_length = len(model_output),
+                    success         = True,
+                    error           = None,
+                )
+            elif model_cfg.get("backend") == "hardcoded":
+                start = time.perf_counter()
+                model_output = call_baseline(sample, model_cfg)
+                latency_ms = int((time.perf_counter() - start) * 1000)
+                call_record = CallRecord(
+                    sample_id       = sample_id,
+                    model           = model_cfg["name"],
+                    backend         = "hardcoded",
+                    prompt_hash     = prompt_hash,
+                    timestamp_utc   = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    latency_ms      = latency_ms,
                     response_length = len(model_output),
                     success         = True,
                     error           = None,

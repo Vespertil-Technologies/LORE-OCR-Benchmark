@@ -1,0 +1,21 @@
+{
+  "model": "always_null",
+  "backend": "hardcoded",
+  "split": "dev",
+  "n_records": 240,
+  "timestamp_utc": "2026-05-02T08:22:56Z",
+  "metrics": {
+    "exact_match_rate": 0.0,
+    "mean_ned": 1.0,
+    "required_f1": 0.0,
+    "hallucination_rate": 0.0,
+    "schema_valid": 0.0,
+    "parse_success": 1.0,
+    "mean_correction_gain": -3.7902
+  },
+  "failure_modes": {
+    "schema_mismatch": 240,
+    "missing_required": 240,
+    "correction_regression": 232
+  }
+}

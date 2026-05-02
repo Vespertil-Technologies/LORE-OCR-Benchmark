@@ -569,11 +569,51 @@ def generate_report(
     # Render
     report_path = render_report(evaluated, run_dir, run_config, comparison)
 
+    # Also write a machine-readable summary alongside the HTML report.
+    # The leaderboard tool reads this file and compares it across runs.
+    write_summary(evaluated, run_dir, run_config)
+
     if verbose:
         print(f"\nReport written → {report_path}")
         _print_terminal_summary(evaluated)
 
     return report_path
+
+
+def write_summary(evaluated: list[dict], run_dir: Path, run_config: dict) -> Path:
+    """Dump key aggregate metrics for one run as a small JSON file.
+
+    The shape is intentionally flat and frozen so leaderboard scripts can
+    rely on it across runs.
+    """
+    agg = aggregate(evaluated)
+    overall = agg["overall"]
+
+    def _mean_of(metric: str) -> float | None:
+        return overall.get(metric, {}).get("mean")
+
+    summary = {
+        "model":             run_config.get("model"),
+        "backend":           run_config.get("backend"),
+        "split":             run_config.get("filters", {}).get("split"),
+        "n_records":         agg["n_records"],
+        "timestamp_utc":     run_config.get("timestamp_utc"),
+        "metrics": {
+            "exact_match_rate":     _mean_of("exact_match_rate"),
+            "mean_ned":             _mean_of("mean_ned"),
+            "required_f1":          _mean_of("required_f1"),
+            "hallucination_rate":   _mean_of("hallucination_rate"),
+            "schema_valid":         _mean_of("schema_valid"),
+            "parse_success":        _mean_of("parse_success"),
+            "mean_correction_gain": _mean_of("mean_correction_gain"),
+        },
+        "failure_modes":     agg["failure_modes"],
+    }
+
+    summary_path = run_dir / "summary.json"
+    with open(summary_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+    return summary_path
 
 
 def _print_terminal_summary(evaluated: list[dict]) -> None:

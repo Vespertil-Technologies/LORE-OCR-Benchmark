@@ -1,0 +1,18 @@
+{
+  "run_id": "R01",
+  "model": "regex_rules",
+  "backend": "hardcoded",
+  "temperature": 0,
+  "max_tokens": 1024,
+  "filters": {
+    "split": "dev",
+    "domain": null,
+    "difficulty": null,
+    "task": null,
+    "n": null
+  },
+  "n_samples": 240,
+  "dry_run": false,
+  "eval_config_version": "1.0.0",
+  "timestamp_utc": "2026-05-02T08:22:57Z"
+}
