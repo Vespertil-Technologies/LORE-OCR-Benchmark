@@ -1,0 +1,97 @@
+[build-system]
+requires      = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name            = "lore-benchmark"
+version         = "0.1.0"
+description     = "LORE: LLM OCR Robustness Evaluation. Benchmark for evaluating how well LLMs reconstruct structured data from corrupted OCR text."
+readme          = "README.md"
+requires-python = ">=3.10"
+license         = { text = "MIT" }
+authors         = [{ name = "Vespertil Technologies" }]
+keywords        = ["ocr", "llm", "benchmark", "evaluation", "structured-extraction"]
+classifiers     = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+openai    = ["openai>=1.0.0"]
+anthropic = ["anthropic>=0.20.0"]
+all       = ["openai>=1.0.0", "anthropic>=0.20.0"]
+dev       = ["pytest>=7.0", "ruff>=0.4"]
+
+[project.urls]
+Homepage   = "https://github.com/Vespertil-Technologies/LORE-OCR-Benchmark"
+Repository = "https://github.com/Vespertil-Technologies/LORE-OCR-Benchmark"
+Issues     = "https://github.com/Vespertil-Technologies/LORE-OCR-Benchmark/issues"
+
+
+# ── Build configuration ─────────────────────────────────────────────────────
+
+[tool.hatch.build.targets.wheel]
+packages = ["dataset", "evaluator", "parsers", "report", "runners", "stats"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"config"             = "config"
+"prompts"            = "prompts"
+"validate_configs.py" = "validate_configs.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/dataset",
+    "/evaluator",
+    "/parsers",
+    "/report",
+    "/runners",
+    "/stats",
+    "/config",
+    "/prompts",
+    "/tests",
+    "/validate_configs.py",
+    "/README.md",
+    "/LICENSE",
+    "/CONTRIBUTING.md",
+    "/CODE_OF_CONDUCT.md",
+]
+
+
+# ── Tool configuration ──────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+minversion   = "7.0"
+testpaths    = ["tests"]
+python_files = ["test_*.py"]
+addopts      = "-ra --strict-markers"
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+line-length    = 120
+target-version = "py310"
+extend-exclude = ["data", "runs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = [
+    "E501",  # line length handled by formatter, not linter
+    "B008",  # function call in argument defaults (used for re.compile etc.)
+    "UP007", # X | Y unions are fine on 3.10+
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*"            = ["E501"]
+"**/__main__.py"     = ["E501"]
+"validate_configs.py" = ["E501"]
