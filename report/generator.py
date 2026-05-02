@@ -18,7 +18,9 @@ Output:
 """
 
 from __future__ import annotations
+
 import json
+import logging
 import sys
 import time
 from pathlib import Path
@@ -28,20 +30,19 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # ── Imports ────────────────────────────────────────────────────────────────────
 
-from parsers.json_coercion   import coerce
-from parsers.normalizers     import normalize_struct
-
-from evaluator.field_metrics         import compute_field_metrics
-from evaluator.normalization_metrics import compute_normalization_metrics
-from evaluator.correction_metrics    import compute_correction_metrics
+from evaluator.correction_metrics import compute_correction_metrics
+from evaluator.field_metrics import compute_field_metrics
 from evaluator.hallucination_detector import detect_hallucinations
-from evaluator.schema_validator      import validate_schema
-
-from stats.aggregator import aggregate, print_summary
-from stats.bootstrap  import bootstrap_ci
-from stats.visuals    import build_all_charts, ascii_bar_chart
-
+from evaluator.normalization_metrics import compute_normalization_metrics
+from evaluator.schema_validator import validate_schema
+from parsers.json_coercion import coerce
+from parsers.normalizers import normalize_struct
 from runners.multi_run import load_predictions
+from stats.aggregator import aggregate, print_summary
+from stats.bootstrap import bootstrap_ci
+from stats.visuals import build_all_charts
+
+log = logging.getLogger(__name__)
 
 _CONFIG_DIR = Path(__file__).parent.parent / "config"
 
@@ -76,7 +77,13 @@ def evaluate_record(record: dict) -> dict:
     try:
         pred_norm = normalize_struct(pred_struct, domain, DOMAINS) if pred_struct else {}
         gt_norm   = normalize_struct(gt_struct,   domain, DOMAINS)
-    except Exception:
+    except (ValueError, KeyError, TypeError) as e:
+        # Normalization can fail on unexpected pred shapes. Fall back to raw
+        # values rather than dropping the entire record.
+        log.warning(
+            "Normalization failed for sample %s (%s); using raw values. %s",
+            record.get("sample_id"), domain, e,
+        )
         pred_norm = pred_struct or {}
         gt_norm   = gt_struct
 
@@ -260,13 +267,11 @@ def render_report(
     req_f1       = overall.get("required_f1", {})
     hall_rate    = overall.get("hallucination_rate", {})
     schema_valid = overall.get("schema_valid", {})
-    parse_ok     = overall.get("parse_success", {})
     corr_gain    = overall.get("mean_correction_gain", {})
     exact_match  = overall.get("exact_match_rate", {})
 
     n_total      = agg["n_records"]
     model_name   = run_config.get("model", "unknown")
-    ts           = run_config.get("timestamp_utc", "")
     split        = run_config.get("filters", {}).get("split", "test")
     n_fail       = agg["failure_modes"].get("parse_failure", 0)
 

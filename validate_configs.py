@@ -134,7 +134,7 @@ def check_abbreviation_consistency(domains: dict, ev: dict) -> None:
     for domain_name, domain_cfg in domains.items():
         if domain_name.startswith("_"):
             continue
-        for field, variants in domain_cfg["key_label_variants"].items():
+        for _field, variants in domain_cfg["key_label_variants"].items():
             for v in variants:
                 if len(v) <= 8:
                     short_variants.add(v.lower())

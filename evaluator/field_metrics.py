@@ -17,8 +17,8 @@ Metrics produced:
 """
 
 from __future__ import annotations
-from typing import Any
 
+from typing import Any
 
 # ══════════════════════════════════════════════════════════════════════════════
 # HELPERS
@@ -195,7 +195,6 @@ def compute_field_metrics(
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
-    import json
 
     required = [
         "policyholder.name", "policyholder.dob",

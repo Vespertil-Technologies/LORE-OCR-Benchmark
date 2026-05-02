@@ -19,7 +19,6 @@ Does NOT:
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -55,7 +54,6 @@ def _build_schema_string(domain: str) -> str:
     domain_cfg    = DOMAINS[domain]
     schema_def    = domain_cfg["schema"]
     required      = set(domain_cfg["required_fields"])
-    optional      = set(domain_cfg["optional_fields"])
 
     def _render_node(node: dict, prefix: str = "") -> dict:
         """Recursively render a schema node into a display dict."""

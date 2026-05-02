@@ -19,8 +19,8 @@ Does NOT:
 
 import json
 import random
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, Iterator
 
 # ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -151,7 +151,7 @@ def iter_samples(
                 except json.JSONDecodeError as e:
                     raise ValueError(
                         f"Malformed JSON at {filepath}:{line_num} - {e}"
-                    )
+                    ) from e
                 if _passes_filters(sample, task, noise_tags):
                     yield sample
 
@@ -314,7 +314,5 @@ if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("PART 6 - Generator mode (memory efficient iteration)")
     print("=" * 60)
-    total = 0
-    for sample in iter_samples(DATA_DIR, domain="receipts"):
-        total += 1
+    total = sum(1 for _ in iter_samples(DATA_DIR, domain="receipts"))
     print(f"Iterated {total} receipt samples via generator")

@@ -11,11 +11,11 @@ Functions:
 """
 
 from __future__ import annotations
+
 import math
 import random
 import sys
 from pathlib import Path
-from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -130,7 +130,7 @@ def wilcoxon_signed_rank(
         )
 
     # Compute differences, exclude zeros (ties)
-    diffs = [a - b for a, b in zip(scores_a, scores_b) if a != b]
+    diffs = [a - b for a, b in zip(scores_a, scores_b, strict=True) if a != b]
     n = len(diffs)
 
     if n == 0:

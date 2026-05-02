@@ -20,8 +20,8 @@ Noise tiers:
 import json
 import random
 import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 # ── Config loading ─────────────────────────────────────────────────────────────
 
@@ -230,7 +230,7 @@ def _apply_key_abbrev(text: str, rng: random.Random, rate_cfg: dict, domain: str
     rate = rng.uniform(rate_cfg["min"], rate_cfg["max"])
     # Build a flat map: full_label -> list of short variants
     abbrev_map: dict[str, list[str]] = {}
-    for field, variants in DOMAINS[domain]["key_label_variants"].items():
+    for _field, variants in DOMAINS[domain]["key_label_variants"].items():
         if len(variants) > 1:
             # First variant is usually the "full" form - rest are abbreviations
             full = variants[0]
@@ -279,7 +279,7 @@ def _apply_delimiter_swap(text: str, rng: random.Random, rate_cfg: dict) -> tupl
     n = rng.randint(rate_cfg["lines_per_sample"][0], rate_cfg["lines_per_sample"][1])
     delimiters = NOISE_WEIGHTS["delimiter_swap_chars"]
     lines = text.split("\n")
-    eligible = [i for i, l in enumerate(lines) if ":" in l and l.strip()]
+    eligible = [i for i, ln in enumerate(lines) if ":" in ln and ln.strip()]
     rng.shuffle(eligible)
     for idx in eligible[:n]:
         new_delim = rng.choice(delimiters)
@@ -406,7 +406,7 @@ def _apply_ghost_value(
     """
     lines = text.split("\n")
     # Find lines that have a separator (key: value structure)
-    eligible = [i for i, l in enumerate(lines) if _find_separator_idx(l) >= 0 and l.strip()]
+    eligible = [i for i, ln in enumerate(lines) if _find_separator_idx(ln) >= 0 and ln.strip()]
     if not eligible:
         return text, "ghost_value"
 
@@ -425,7 +425,7 @@ def _apply_ghost_value(
 def _apply_conflicting_field(text: str, rng: random.Random, rate_cfg: dict) -> tuple[str, str]:
     """Duplicate one key-value line near the end with a different value."""
     lines = text.split("\n")
-    eligible = [i for i, l in enumerate(lines) if _find_separator_idx(l) >= 0 and l.strip()]
+    eligible = [i for i, ln in enumerate(lines) if _find_separator_idx(ln) >= 0 and ln.strip()]
     if not eligible:
         return text, "conflicting_field"
 
@@ -446,7 +446,7 @@ def _apply_ambiguous_key(text: str, rng: random.Random, rate_cfg: dict) -> tuple
     """Replace a key label with a vague label that could map to multiple fields."""
     ambiguous_labels = ["Ref No", "Date", "Number", "ID", "Code", "No", "Details"]
     lines = text.split("\n")
-    eligible = [i for i, l in enumerate(lines) if _find_separator_idx(l) >= 0 and l.strip()]
+    eligible = [i for i, ln in enumerate(lines) if _find_separator_idx(ln) >= 0 and ln.strip()]
     if not eligible:
         return text, "ambiguous_key"
 
@@ -468,7 +468,7 @@ def _apply_value_swap(text: str, rng: random.Random, rate_cfg: dict) -> tuple[st
     rather than relying on position or label heuristics.
     """
     lines = text.split("\n")
-    eligible = [i for i, l in enumerate(lines) if _find_separator_idx(l) >= 0 and l.strip()]
+    eligible = [i for i, ln in enumerate(lines) if _find_separator_idx(ln) >= 0 and ln.strip()]
     if len(eligible) < 2:
         return text, "value_swap"
 
@@ -491,7 +491,7 @@ def _apply_section_erase(text: str, rng: random.Random, rate_cfg: dict) -> tuple
     The keys remain visible but all values become garbled or empty.
     """
     lines = text.split("\n")
-    eligible = [i for i, l in enumerate(lines) if _find_separator_idx(l) >= 0 and l.strip()]
+    eligible = [i for i, ln in enumerate(lines) if _find_separator_idx(ln) >= 0 and ln.strip()]
     if len(eligible) < 2:
         return text, "section_erase"
 
@@ -828,7 +828,7 @@ def generate_noise(
     """
     max_retries = GEN_CONFIG["validator_settings"]["max_retries"]
 
-    for attempt in range(max_retries):
+    for _attempt in range(max_retries):
         # Use a fresh sub-rng per attempt so retries don't pollute the main sequence
         attempt_rng = random.Random(rng.random())
 

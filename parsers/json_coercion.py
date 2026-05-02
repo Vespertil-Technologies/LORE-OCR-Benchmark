@@ -22,8 +22,6 @@ Never raises - always returns something.
 
 import json
 import re
-from typing import Any
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ATTEMPT 1 - Direct parse
