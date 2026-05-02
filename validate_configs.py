@@ -23,6 +23,7 @@ Expected output (if everything is correct):
 
 import json
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 CONFIG_DIR = Path(__file__).parent / "config"
@@ -39,9 +40,9 @@ def load(filename: str) -> dict:
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def get_all_noise_tags(nw: dict) -> set:
+def get_all_noise_tags(nw: dict) -> set[str]:
     """Return every noise tag name defined across all tier weight tables."""
-    tags = set()
+    tags: set[str] = set()
     for tier_key in ["tier_1_weights", "tier_2_weights", "tier_3_weights", "tier_4_weights"]:
         tags.update(k for k in nw[tier_key] if not k.startswith("_"))
     return tags
@@ -175,7 +176,7 @@ def main():
         print(f"[FAIL] JSON parse error: {e}")
         sys.exit(1)
 
-    checks = [
+    checks: list[tuple[Callable[..., None], tuple]] = [
         (check_domains_loaded,         (domains,)),
         (check_noise_applicability,    (nw,)),
         (check_required_fields,        (domains,)),

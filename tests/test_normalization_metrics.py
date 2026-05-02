@@ -41,8 +41,8 @@ class TestLevenshtein:
 
     def test_coerces_non_string_inputs(self):
         """levenshtein casts inputs to str so int/float comparisons do not crash."""
-        assert levenshtein(123, "123") == 0
-        assert levenshtein(5000, "5000.0") > 0
+        assert levenshtein(123, "123") == 0  # type: ignore[arg-type]
+        assert levenshtein(5000, "5000.0") > 0  # type: ignore[arg-type]
 
 
 class TestNormalizedEditDistance:

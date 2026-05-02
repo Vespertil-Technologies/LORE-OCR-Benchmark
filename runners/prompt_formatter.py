@@ -19,6 +19,7 @@ Does NOT:
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ def _build_schema_string(domain: str) -> str:
 
     def _render_node(node: dict, prefix: str = "") -> dict:
         """Recursively render a schema node into a display dict."""
-        result = {}
+        result: dict[str, Any] = {}
         for key, value in node.items():
             if key.startswith("_"):
                 continue

@@ -61,7 +61,7 @@ def ascii_bar_chart(
 
 
 def ascii_heatmap(
-    data:        dict[str, dict[str, float]],
+    data:        dict[str, dict[str, float | None]],
     row_label:   str = "domain",
     col_label:   str = "difficulty",
     metric:      str = "field_f1",

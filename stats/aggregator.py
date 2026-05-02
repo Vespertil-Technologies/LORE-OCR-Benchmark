@@ -100,6 +100,7 @@ def _std(values: list[float]) -> float | None:
     if len(values) < 2:
         return None
     m = _mean(values)
+    assert m is not None  # values is non-empty here (len >= 2)
     variance = sum((v - m) ** 2 for v in values) / (len(values) - 1)
     return math.sqrt(variance)
 
@@ -110,13 +111,18 @@ def _summarize(values: list[float]) -> dict:
     if not clean:
         return {"n": 0, "mean": None, "median": None,
                 "p10": None, "p90": None, "std": None}
+    mean   = _mean(clean)
+    median = _median(clean)
+    p10    = _percentile(clean, 10)
+    p90    = _percentile(clean, 90)
+    std    = _std(clean)
     return {
         "n":      len(clean),
-        "mean":   round(_mean(clean),          4),
-        "median": round(_median(clean),        4),
-        "p10":    round(_percentile(clean, 10), 4),
-        "p90":    round(_percentile(clean, 90), 4),
-        "std":    round(_std(clean),           4) if _std(clean) else None,
+        "mean":   round(mean,   4) if mean   is not None else None,
+        "median": round(median, 4) if median is not None else None,
+        "p10":    round(p10,    4) if p10    is not None else None,
+        "p90":    round(p90,    4) if p90    is not None else None,
+        "std":    round(std,    4) if std    is not None else None,
     }
 
 

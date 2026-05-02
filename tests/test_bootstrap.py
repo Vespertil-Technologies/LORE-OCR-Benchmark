@@ -49,7 +49,7 @@ class TestBootstrapCI:
         assert large["ci_width"] < small["ci_width"]
 
     def test_filters_none_values(self):
-        result = bootstrap_ci([1.0, 2.0, None, 3.0], n_resamples=200, seed=0)
+        result = bootstrap_ci([1.0, 2.0, None, 3.0], n_resamples=200, seed=0)  # type: ignore[list-item]
         assert result["n"] == 3
         assert result["mean"] == pytest.approx(2.0, abs=0.01)
 

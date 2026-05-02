@@ -227,7 +227,7 @@ def write_dataset(
 
     # Compute split boundaries
     boundaries = [0]
-    cumulative = 0
+    cumulative = 0.0
     for ratio in ratios[:-1]:
         cumulative += ratio
         boundaries.append(int(n * cumulative))
