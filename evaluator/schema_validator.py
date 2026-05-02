@@ -252,6 +252,7 @@ if __name__ == "__main__":
     ]
 
     for label, domain, parse_status, pred in cases:
+        assert isinstance(pred, dict)  # __main__ test cases all use dicts
         result = validate_schema(pred, domain, parse_status)
         status = "VALID" if result["schema_valid"] else "INVALID"
         print(f"\n{'─'*55}")

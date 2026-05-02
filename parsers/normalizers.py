@@ -470,7 +470,7 @@ if __name__ == "__main__":
     print("PART 2 - Number normalization")
     print("=" * 60)
 
-    num_cases = [
+    num_cases: list[tuple[str | int, float | None]] = [
         ("5,000",      5000.0),
         ("5,000 INR",  5000.0),
         ("₹ 5000",     5000.0),
@@ -480,10 +480,10 @@ if __name__ == "__main__":
         ("1.5 crore",  15000000.0),
         (5000,         5000.0),
     ]
-    for raw, expected in num_cases:
-        result = normalize_number(raw)
-        status = "PASS" if result == expected else f"FAIL got {result}"
-        print(f"  {str(raw):<20} → {str(result):<14} {status}")
+    for n_raw, n_expected in num_cases:
+        n_result = normalize_number(n_raw)
+        n_status = "PASS" if n_result == n_expected else f"FAIL got {n_result}"
+        print(f"  {str(n_raw):<20} → {str(n_result):<14} {n_status}")
 
     print("\n" + "=" * 60)
     print("PART 3 - Currency code normalization")

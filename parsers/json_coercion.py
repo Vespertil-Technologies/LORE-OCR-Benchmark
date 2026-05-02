@@ -22,6 +22,7 @@ Never raises - always returns something.
 
 import json
 import re
+from typing import Any
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ATTEMPT 1 - Direct parse
@@ -161,7 +162,7 @@ def _try_regex_extract(text: str) -> dict | None:
     if len(matches) < 2:
         return None
 
-    result = {}
+    result: dict[str, Any] = {}
     for key, raw_value in matches:
         try:
             value = json.loads(raw_value)

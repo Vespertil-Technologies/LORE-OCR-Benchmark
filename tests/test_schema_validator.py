@@ -33,11 +33,11 @@ class TestParseFailureShortCircuit:
 
 class TestNonDictPrediction:
     def test_string_prediction_is_invalid(self):
-        result = validate_schema("not a dict", "insurance", parse_status="success")
+        result = validate_schema("not a dict", "insurance", parse_status="success")  # type: ignore[arg-type]
         assert result["schema_valid"] is False
 
     def test_list_prediction_is_invalid(self):
-        result = validate_schema(["item"], "insurance", parse_status="success")
+        result = validate_schema(["item"], "insurance", parse_status="success")  # type: ignore[arg-type]
         assert result["schema_valid"] is False
 
 

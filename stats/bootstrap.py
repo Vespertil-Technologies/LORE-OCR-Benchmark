@@ -16,6 +16,7 @@ import math
 import random
 import sys
 from pathlib import Path
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -242,7 +243,7 @@ def full_comparison(
     if not shared_ids:
         return {"error": "No shared sample IDs between the two record sets"}
 
-    results = {
+    results: dict[str, Any] = {
         "model_a":      model_a_name,
         "model_b":      model_b_name,
         "n_paired":     len(shared_ids),
@@ -378,7 +379,9 @@ if __name__ == "__main__":
     print("PART 1 - Bootstrap CI for GPT-4o field_f1")
     print("=" * 65)
     from stats.aggregator import _extract_metrics
-    scores_gpt = [_extract_metrics(r)["field_f1"] for r in records_gpt if _extract_metrics(r)["field_f1"] is not None]
+    scores_gpt: list[float] = [
+        s for s in (_extract_metrics(r)["field_f1"] for r in records_gpt) if s is not None
+    ]
     ci = bootstrap_ci(scores_gpt)
     print(f"  mean  : {ci['mean']}")
     print(f"  95% CI: [{ci['ci_lower']}, {ci['ci_upper']}]")

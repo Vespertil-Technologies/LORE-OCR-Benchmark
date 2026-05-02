@@ -353,7 +353,9 @@ def _apply_date_format_vary(text: str, rng: random.Random, rate_cfg: dict) -> tu
 
     result = text
     for pattern, src_fmt in date_patterns:
-        result = re.sub(pattern, lambda m, f=src_fmt: reformat(m, f), result)
+        def _replace(m: re.Match, f: str = src_fmt) -> str:
+            return reformat(m, f)
+        result = re.sub(pattern, _replace, result)
     return result, "date_format_vary"
 
 

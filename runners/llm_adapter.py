@@ -237,6 +237,7 @@ def _call_with_retry(
             else:
                 break
 
+    assert last_error is not None  # the loop only exits via raise or by setting last_error
     raise last_error
 
 
