@@ -16,11 +16,8 @@ Charts produced:
 """
 
 from __future__ import annotations
-import json
-import math
-from pathlib import Path
-from typing import Any
 
+from pathlib import Path
 
 # ══════════════════════════════════════════════════════════════════════════════
 # ASCII CHARTS - for terminal/log output
@@ -78,10 +75,14 @@ def ascii_heatmap(
         cols = ["easy", "medium", "hard", "extreme"]
 
     def _block(v: float | None) -> str:
-        if v is None: return "·   "
-        if v >= 0.85: return "▓▓▓ "
-        if v >= 0.70: return "▒▒▒ "
-        if v >= 0.50: return "░░░ "
+        if v is None:
+            return "·   "
+        if v >= 0.85:
+            return "▓▓▓ "
+        if v >= 0.70:
+            return "▒▒▒ "
+        if v >= 0.50:
+            return "░░░ "
         return "··· "
 
     lines = [f"  {metric}  ({row_label} × {col_label})"]
@@ -98,7 +99,7 @@ def ascii_heatmap(
         )
         lines.append(f"  {row_key:<15}  {cells}  [{vals}]")
 
-    lines.append(f"\n  Legend: ▓▓▓=≥0.85  ▒▒▒=≥0.70  ░░░=≥0.50  ···=<0.50")
+    lines.append("\n  Legend: ▓▓▓=≥0.85  ▒▒▒=≥0.70  ░░░=≥0.50  ···=<0.50")
     return "\n".join(lines)
 
 
@@ -238,7 +239,8 @@ def html_heatmap_table(
         cols = ["easy", "medium", "hard", "extreme"]
 
     def _cell_color(v: float | None) -> str:
-        if v is None: return "#e0e0e0"
+        if v is None:
+            return "#e0e0e0"
         # Clamp to [0, 1] range
         v = max(0.0, min(1.0, v))
         score = v if higher_better else (1 - v)
@@ -248,7 +250,7 @@ def html_heatmap_table(
         return f"rgb({r},{g},{b})"
 
     rows = [
-        f'<table style="border-collapse:collapse;font-family:monospace;font-size:12px">',
+        '<table style="border-collapse:collapse;font-family:monospace;font-size:12px">',
         f'<caption style="font-weight:bold;padding:6px">{title} - {metric}</caption>',
         '<tr><th style="padding:6px;border:1px solid #ccc">Domain</th>',
     ]
@@ -349,8 +351,7 @@ def html_comparison_chart(comparison: dict, metrics: list[str] | None = None) ->
                        f'fill="#333">{mean:.3f}</text>')
 
         # Winner badge
-        winner = result.get("winner", "")
-        sig    = result.get("wilcoxon", {}).get("significant", False)
+        sig = result.get("wilcoxon", {}).get("significant", False)
         badge_color = "#4CAF50" if sig else "#9E9E9E"
         svg.append(f'<text x="{width_px - 6}" y="{y_base + bar_h}" '
                    f'text-anchor="end" fill="{badge_color}" font-size="10">'
@@ -431,10 +432,11 @@ def build_all_charts(agg: dict, comparison: dict | None = None) -> dict[str, str
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
-    import sys, random as _rnd
+    import random as _rnd
+    import sys
     sys.path.insert(0, str(Path(__file__).parent.parent))
     from stats.aggregator import aggregate
-    from stats.bootstrap  import full_comparison
+    from stats.bootstrap import full_comparison
 
     # Simulate evaluated records
     rng = _rnd.Random(42)

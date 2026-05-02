@@ -36,8 +36,8 @@ jobs:
       - name: Validate configs
         run: python validate_configs.py
 
-      - name: Lint tests
-        run: ruff check tests/
+      - name: Lint
+        run: ruff check .
 
       - name: Run tests
         run: pytest -ra

@@ -14,6 +14,7 @@ Lower is better. 0.0 = model never invented anything.
 """
 
 from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
@@ -58,7 +59,7 @@ def _fuzzy_ratio(a: str, b: str) -> float:
     for i in range(len(longer) - s_len + 1):
         window = longer[i:i + s_len]
         # Count matching characters positionally
-        matches = sum(c1 == c2 for c1, c2 in zip(shorter, window))
+        matches = sum(c1 == c2 for c1, c2 in zip(shorter, window, strict=True))
         ratio = (2.0 * matches) / (s_len + s_len) * 100
         if ratio > best:
             best = ratio

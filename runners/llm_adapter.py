@@ -28,9 +28,8 @@ import json
 import logging
 import os
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 # ── Logging ────────────────────────────────────────────────────────────────────
 
@@ -90,12 +89,12 @@ def _call_openai(prompt: str, model_cfg: dict) -> str:
     """Call OpenAI-compatible API."""
     try:
         from openai import OpenAI
-    except ImportError:
-        raise ImportError("openai package not installed. Run: pip install openai")
+    except ImportError as e:
+        raise ImportError("openai package not installed. Run: pip install openai") from e
 
     api_key = os.environ.get(model_cfg["api_key_env_var"])
     if not api_key:
-        raise EnvironmentError(
+        raise OSError(
             f"API key not found in environment variable '{model_cfg['api_key_env_var']}'"
         )
 
@@ -114,12 +113,12 @@ def _call_anthropic(prompt: str, model_cfg: dict) -> str:
     """Call Anthropic API."""
     try:
         import anthropic
-    except ImportError:
-        raise ImportError("anthropic package not installed. Run: pip install anthropic")
+    except ImportError as e:
+        raise ImportError("anthropic package not installed. Run: pip install anthropic") from e
 
     api_key = os.environ.get(model_cfg["api_key_env_var"])
     if not api_key:
-        raise EnvironmentError(
+        raise OSError(
             f"API key not found in environment variable '{model_cfg['api_key_env_var']}'"
         )
 
@@ -137,8 +136,8 @@ def _call_ollama(prompt: str, model_cfg: dict) -> str:
     """Call a local model via Ollama HTTP endpoint."""
     try:
         import urllib.request
-    except ImportError:
-        raise ImportError("urllib is part of the standard library - this should not happen.")
+    except ImportError as e:
+        raise ImportError("urllib is part of the standard library - this should not happen.") from e
 
     base_url = model_cfg.get("base_url", "http://localhost:11434")
     payload = json.dumps({
@@ -166,8 +165,8 @@ def _call_llama_cpp(prompt: str, model_cfg: dict) -> str:
     """Call a local model via llama-cpp-python HTTP server."""
     try:
         import urllib.request
-    except ImportError:
-        raise ImportError("urllib is part of the standard library.")
+    except ImportError as e:
+        raise ImportError("urllib is part of the standard library.") from e
 
     base_url = model_cfg.get("base_url", "http://localhost:8080")
     payload = json.dumps({
@@ -217,7 +216,7 @@ def _call_with_retry(
     for attempt in range(max_retries + 1):
         try:
             return fn(prompt, model_cfg)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - backend SDKs raise heterogeneous types; we classify by message below
             last_error = e
             error_str = str(e).lower()
 
@@ -300,7 +299,7 @@ def call(
         response = _call_with_retry(backend_fn, prompt, model_cfg, max_retries, backoff)
         success  = True
         log.info(f"[{sample_id}] {model_cfg['name']} → {len(response)} chars  ({int((time.perf_counter()-start)*1000)}ms)")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - final fallthrough; turns any backend failure into a structured CallRecord
         success   = False
         error_msg = f"{type(e).__name__}: {e}"
         log.error(f"[{sample_id}] FAILED after {max_retries} retries - {error_msg}")
@@ -406,7 +405,7 @@ if __name__ == "__main__":
     print("=" * 60)
     print("Supported run IDs (from eval_config.json):")
     print("=" * 60)
-    for run_id, run_val in EVAL_CONFIG["supported_models"].items():
+    for run_id, _run_val in EVAL_CONFIG["supported_models"].items():
         if run_id.startswith("_"):
             continue
         cfg = build_model_cfg(run_id)

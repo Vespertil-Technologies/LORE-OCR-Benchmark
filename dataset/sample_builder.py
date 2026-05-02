@@ -25,14 +25,14 @@ Responsibilities:
 
 import json
 import random
+import sys
 from pathlib import Path
 from typing import Any
 
-import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from dataset.serializer import serialize
 from dataset.noise_generator import generate_noise
+from dataset.serializer import serialize
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -322,5 +322,5 @@ if __name__ == "__main__":
     print("Manifest")
     print("=" * 60)
 
-    from loader import dataset_manifest, print_manifest
+    from loader import print_manifest
     print_manifest(OUTPUT_DIR)

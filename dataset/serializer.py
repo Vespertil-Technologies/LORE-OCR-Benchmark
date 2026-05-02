@@ -17,8 +17,8 @@ The output of this module is what the noise engine receives as input.
 
 import json
 import random
+from datetime import datetime
 from pathlib import Path
-from datetime import datetime, date as date_type
 from typing import Any
 
 # ── Config loading ─────────────────────────────────────────────────────────────
@@ -195,7 +195,6 @@ def serialize(
 # ── Usage example ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    import pprint
 
     # ── Example 1: Receipts (flat) ─────────────────────────────────────────
     receipt_gt = {

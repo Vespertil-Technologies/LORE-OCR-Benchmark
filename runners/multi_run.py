@@ -22,17 +22,15 @@ Output structure:
 
 import json
 import re
-import time
-import hashlib
-from pathlib import Path
-from typing import Any
 import sys
+import time
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from dataset.loader       import load_samples, dataset_manifest
+from dataset.loader import load_samples
+from runners.llm_adapter import EVAL_CONFIG, CallRecord, build_model_cfg, call
 from runners.prompt_formatter import build_prompt
-from runners.llm_adapter  import call, build_model_cfg, CallRecord, EVAL_CONFIG
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 
@@ -362,7 +360,7 @@ def load_predictions(run_dir: Path) -> list[dict]:
             try:
                 records.append(json.loads(line))
             except json.JSONDecodeError as e:
-                raise ValueError(f"Malformed JSON at predictions.jsonl:{line_num} - {e}")
+                raise ValueError(f"Malformed JSON at predictions.jsonl:{line_num} - {e}") from e
     return records
 
 

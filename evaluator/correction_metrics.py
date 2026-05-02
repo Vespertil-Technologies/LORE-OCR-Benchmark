@@ -21,14 +21,14 @@ This metric requires raw_text from generation_meta (stored in prediction records
 """
 
 from __future__ import annotations
-import re
-from typing import Any
 
+import re
 import sys
 from pathlib import Path as _Path
-sys.path.insert(0, str(_Path(__file__).parent.parent))
-from evaluator.normalization_metrics import levenshtein, _flatten
+from typing import Any
 
+sys.path.insert(0, str(_Path(__file__).parent.parent))
+from evaluator.normalization_metrics import _flatten, levenshtein
 
 # ══════════════════════════════════════════════════════════════════════════════
 # RAW OCR VALUE EXTRACTOR
@@ -214,7 +214,8 @@ def compute_correction_metrics(
 # ══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
-    import json, sys
+    import json
+    import sys
     from pathlib import Path
     sys.path.insert(0, str(Path(__file__).parent.parent))
 
