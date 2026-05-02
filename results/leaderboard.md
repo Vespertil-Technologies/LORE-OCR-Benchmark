@@ -1,6 +1,6 @@
 # LORE leaderboard
 
-Generated: 2026-05-02T08:23:04+00:00
+Generated: 2026-05-02T08:29:52+00:00
 
 Sorted by exact match rate. All entries are reproducible from the frozen seed in `config/generation_config.json` plus the run config snapshot in each entry's `results/<model>/run_config.json`.
 
