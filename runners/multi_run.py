@@ -206,9 +206,15 @@ def run(
     Returns:
         Path to the run directory containing predictions.jsonl.
     """
+    # Force UTF-8 stdout so progress lines with non-ASCII characters do not
+    # crash on Windows consoles (default cp1252).
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     model_cfg = build_model_cfg(run_id)
 
     # ── Setup run directory ────────────────────────────────────────────────
+    _RUNS_DIR.mkdir(parents=True, exist_ok=True)
     if run_dir is None:
         # Auto-resume: look for an existing partial run for this model
         # Match any run folder for this model that has partial predictions
