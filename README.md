@@ -38,7 +38,8 @@ Each sample is assigned one of four difficulty levels, controlled by how many an
 |--------|-----------------|---------|
 | `exact_match_rate` | Fraction of fields with exactly correct value | yes |
 | `mean_ned` | Normalized edit distance on string fields | yes |
-| `field_f1` | Field presence F1 (precision and recall) | secondary |
+| `field_f1` | Field presence F1 across all fields (required and optional) | secondary |
+| `required_f1` | Field presence F1 computed only over required fields | secondary |
 | `hallucination_rate` | Fraction of invented fields not derivable from OCR | secondary |
 | `schema_valid` | Fraction of outputs with correct nested structure | secondary |
 | `correction_gain` | Improvement over raw OCR text (negative means regression) | secondary |
@@ -59,7 +60,7 @@ The full leaderboard (auto-generated from `results/<model>/summary.json`) lives 
 
 ### Indicative LLM result
 
-A previous Llama 3.2 (2B, local, dev split) run produced these numbers. The artifacts are not committed; reproduce locally with `run_id='R06'`:
+A previous Llama 3.2 (3B, local, dev split) run produced these numbers. The artifacts are not committed; reproduce locally with `run_id='R06'`:
 
 | Difficulty | Exact match | Mean NED |
 |------------|-------------|----------|
@@ -220,10 +221,10 @@ Then open a pull request adding the new entries under `results/`. Anyone reading
 
 ## Adding a model
 
-Add an entry to `config/eval_config.json` under `supported_models`:
+Add an entry to `config/eval_config.json` under `supported_models`. Pick an unused run ID (R00 through R10 are taken in the shipped config):
 
 ```json
-"R06": {
+"R11": {
     "name":            "llama3.2",
     "backend":         "ollama",
     "temperature":     0,
@@ -237,7 +238,7 @@ Supported backends: `openai`, `anthropic`, `ollama`, `llama_cpp`, `hardcoded` (f
 For Groq (free tier, OpenAI-compatible):
 
 ```json
-"R07": {
+"R12": {
     "name":            "llama-3.1-70b-versatile",
     "backend":         "openai",
     "base_url":        "https://api.groq.com/openai/v1",
