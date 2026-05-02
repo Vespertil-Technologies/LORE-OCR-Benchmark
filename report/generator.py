@@ -601,9 +601,17 @@ if __name__ == "__main__":
     """
     import sys
 
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
     runs_root = Path(__file__).parent.parent / "runs"
 
     # Collect all run dirs, sorted newest first
+    if not runs_root.exists():
+        print("No runs/ directory found yet.")
+        print("Run a model first: python -c \"from runners.multi_run import run; run(run_id='R06', split='test')\"")
+        sys.exit(1)
+
     all_runs = sorted(
         [d for d in runs_root.iterdir() if d.is_dir() and (d / "predictions.jsonl").exists()],
         reverse=True,

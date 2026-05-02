@@ -268,6 +268,8 @@ if __name__ == "__main__":
         python dataset/sample_builder.py
     """
     import sys as _sys
+    if hasattr(_sys.stdout, "reconfigure"):
+        _sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     _sys.path.insert(0, str(Path(__file__).parent))
     from gt_generator import generate_batch
 
