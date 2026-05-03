@@ -42,7 +42,7 @@ Each sample is assigned one of four difficulty levels, controlled by how many an
 | `required_f1` | Field presence F1 computed only over required fields | secondary |
 | `hallucination_rate` | Fraction of invented fields not derivable from OCR | secondary |
 | `schema_valid` | Fraction of outputs with correct nested structure | secondary |
-| `correction_gain` | Improvement over raw OCR text (negative means regression) | secondary |
+| `correction_gain` | Improvement over raw OCR text (negative means regression). Baseline is synthetic noise on the synthetic track and real Tesseract output on the vision track, so the metric is meaningful within a track but not directly comparable across tracks. | secondary |
 | `parse_success` | Fraction of outputs parseable as valid JSON | secondary |
 
 ID-type fields (`policy_number`, `receipt_number`, `attending_physician.id`, `agent.agent_id`) require case-sensitive exact matches. A model cannot score partial credit by returning a plausible-looking identifier.
@@ -58,9 +58,9 @@ Verifiable baseline runs are committed under [`results/`](results/). Open the `r
 
 The full leaderboard (auto-generated from `results/<model>/summary.json`) lives at [`results/leaderboard.md`](results/leaderboard.md). To add your own model, see [Submitting a run](#submitting-a-run).
 
-### Indicative LLM result
+### Indicative LLM result (synthetic track)
 
-A previous Llama 3.2 (3B, local, dev split) run produced these numbers. The artifacts are not committed; reproduce locally with `run_id='R06'`:
+A previous Llama 3.2 (3B, local, dev split, synthetic track) run produced these numbers. The artifacts are not committed; reproduce locally with `run_id='R06'`. Vision-track results are not directly comparable since the difficulty tiers there map to image-noise intensity rather than to synthetic noise functions.
 
 | Difficulty | Exact match | Mean NED |
 |------------|-------------|----------|
@@ -213,6 +213,8 @@ python report/generator.py runs/<model_a>_<timestamp> runs/<model_b>_<timestamp>
 
 The report includes a statistical comparison section with 95% bootstrap CIs and Wilcoxon signed-rank p-values.
 
+For a fair comparison, both runs must be on the **same track**. Comparing a synthetic-track run to a vision-track run is unsupported: the inputs are different distributions, so the resulting metrics are not on the same scale. The track each run used is recorded in its `run_config.json` under `filters.track`.
+
 ## Vision track (optional, real OCR)
 
 The default benchmark applies *synthetic* noise functions to clean serialized text. There is also an optional vision track that swaps the synthetic noise step for real OCR: clean text gets rendered as a document image, the image is degraded (blur, rotation, JPEG compression, speckle), and Tesseract is run on the result. The OCR output is what the LLM under test sees.
@@ -249,7 +251,20 @@ The four tiers map to image-noise intensity rather than to synthetic noise funct
 
 ### Run a model against the vision dataset
 
-The same `runners.multi_run.run` entry point works; point its loader at `data/vision/` instead of `data/`. See `dataset/vision_pipeline.py` and `scripts/build_vision_dataset.py` for the exact wiring.
+The same `runners.multi_run.run` entry point handles both tracks. Pass `track='real_ocr'` to point its loader at `data/vision/` instead of `data/`:
+
+```bash
+# Baseline on the vision track
+python -c "from runners.multi_run import run; run(run_id='R01', split='dev', track='real_ocr')"
+
+# LLM on the vision track
+python -c "from runners.multi_run import run; run(run_id='R06', split='dev', track='real_ocr')"
+
+# Generate the report (auto-picks the most recent run; report shape is identical to the synthetic track)
+python report/generator.py
+```
+
+The chosen track is written into the run's `run_config.json` so downstream tools (snapshot, leaderboard) can keep synthetic and vision results separated.
 
 ## Submitting a run
 
@@ -325,7 +340,7 @@ pip install -e .[dev]            # installs pytest, ruff, mypy, pillow, pytesser
 python validate_configs.py       # cross-validates the four config files
 ruff check .                     # lint
 mypy .                           # type check
-pytest                           # 205 tests (vision-pipeline tests skip if Tesseract is absent)
+pytest                           # 215 tests (vision-pipeline tests skip if Tesseract is absent)
 ```
 
 CI runs all of the above on Python 3.10, 3.11, and 3.12 for every push to `main` and every pull request.

@@ -187,6 +187,7 @@ def run(
     dry_run:    bool = False,
     resume:     bool = False,
     run_dir:    Path | None = None,
+    track:      str = "synthetic",
 ) -> Path:
     """
     Execute a full evaluation run for a given model configuration.
@@ -201,6 +202,8 @@ def run(
         dry_run:    If True, skip actual API calls and use mock outputs.
         resume:     If True, skip samples already in predictions.jsonl.
         run_dir:    Optional - provide an existing run dir to resume into.
+        track:      'synthetic' (default) reads from data/. 'real_ocr' reads from
+                    data/vision/ which is populated by scripts/build_vision_dataset.py.
 
     Returns:
         Path to the run directory containing predictions.jsonl.
@@ -245,11 +248,13 @@ def run(
         task=task,
         n=n,
         seed=EVAL_CONFIG.get("base_seed", 42),
+        track=track,
     )
 
     filters = {
         "split": split, "domain": domain,
         "difficulty": difficulty, "task": task, "n": n,
+        "track": track,
     }
 
     _write_run_config(run_dir, run_id, model_cfg, filters, len(samples), dry_run)
