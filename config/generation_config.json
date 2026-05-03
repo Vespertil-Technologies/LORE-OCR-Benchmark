@@ -51,5 +51,19 @@
     "_survival_note": "At easy/medium, required fields must remain recoverable (not completely destroyed) after noise.",
     "extreme_min_required_fields_degraded": 1,
     "_degraded_note": "At extreme, at least 1 required field must be degraded or absent to qualify as genuinely hard."
+  },
+
+  "vision_track": {
+    "_comment": "Optional real-OCR track. Renders gt_struct as a document image, applies image-level noise, then runs Tesseract. Difficulty tier maps to image-noise intensity, not to synthetic noise functions. Requires the [vision] extra and a system Tesseract install.",
+    "enabled": false,
+    "_enabled_note": "Synthetic track is the canonical benchmark. Set enabled=true to additionally generate vision samples when running scripts/build_vision_dataset.py.",
+    "font_size": 18,
+    "ocr_engine": "tesseract",
+    "ocr_language": "eng",
+    "ocr_psm": 6,
+    "_psm_note": "Page Segmentation Mode 6 = single uniform block of text. Matches our renderer output.",
+    "image_output_dir": "data/vision_images/",
+    "jsonl_output_dir": "data/vision/",
+    "_dir_note": "Kept separate from the synthetic data/ tree so the two tracks can co-exist."
   }
 }

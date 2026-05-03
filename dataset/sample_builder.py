@@ -89,6 +89,8 @@ def build_sample(
     sample_index: int,
     base_seed: int,
     notes: str = "",
+    track: str = "synthetic",
+    image_dir: Path | None = None,
 ) -> dict[str, Any]:
     """
     Build one complete sample dict from a clean gt_struct.
@@ -101,6 +103,13 @@ def build_sample(
                         Used to derive a per-sample seed.
         base_seed:      Base random seed from generation_config.json.
         notes:          Optional annotator notes or ambiguity flags.
+        track:          'synthetic' (default) uses the synthetic noise generator.
+                        'real_ocr' renders the text, applies image-level noise,
+                        and runs Tesseract on the result. The vision track
+                        requires the optional 'vision' extra and a system
+                        Tesseract binary.
+        image_dir:      For the real_ocr track, the directory under which to
+                        save the rendered noisy image. Ignored for synthetic.
 
     Returns:
         A dict with all required JSONL fields, ready to be json.dumps()'d.
@@ -117,24 +126,46 @@ def build_sample(
     # Step 1 - Serialize gt_struct → raw text
     raw_text = serialize(gt_struct, domain, serialize_rng)
 
-    # Step 2 - Inject noise → corrupted OCR text + applied tags
-    corrupted_text, noise_tags = generate_noise(
-        raw_text=raw_text,
-        difficulty=difficulty,
-        domain=domain,
-        rng=noise_rng,
-        gt_struct=gt_struct,
-    )
+    # Step 2 - Corrupt the text. Synthetic track uses string-level noise
+    # functions; vision track renders the text, degrades the image, and runs
+    # OCR on it.
+    if track == "synthetic":
+        corrupted_text, noise_tags = generate_noise(
+            raw_text=raw_text,
+            difficulty=difficulty,
+            domain=domain,
+            rng=noise_rng,
+            gt_struct=gt_struct,
+        )
+        vision_meta: dict | None = None
+    elif track == "real_ocr":
+        from dataset.vision_pipeline import render_and_ocr
+        sample_id = _make_id(domain, sample_index)
+        save_to = None
+        if image_dir is not None:
+            save_to = str(image_dir / domain / difficulty / f"{sample_id}.png")
+        corrupted_text, vision_meta = render_and_ocr(
+            serialized_text=raw_text,
+            difficulty=difficulty,
+            rng=noise_rng,
+            save_image_to=save_to,
+        )
+        noise_tags = []  # not applicable for the vision track
+    else:
+        raise ValueError(
+            f"Unknown track '{track}'. Use 'synthetic' or 'real_ocr'."
+        )
 
     # Step 3 - Assign task label
     task = _assign_task(difficulty, task_rng)
 
     # Step 4 - Assemble complete sample dict
-    sample = {
+    sample: dict[str, Any] = {
         "id":              _make_id(domain, sample_index),
         "domain":          domain,
         "task":            task,
         "difficulty":      difficulty,
+        "track":           track,
         "source_type":     GEN_CONFIG["source_type"],  # "synthetic"
         "ocr_text":        corrupted_text,
         "gt_struct":       gt_struct,
@@ -148,6 +179,8 @@ def build_sample(
         },
         "notes": notes,
     }
+    if vision_meta is not None:
+        sample["vision_meta"] = vision_meta
 
     return sample
 
@@ -162,6 +195,8 @@ def build_batch(
     difficulty: str,
     start_index: int,
     base_seed: int,
+    track: str = "synthetic",
+    image_dir: Path | None = None,
 ) -> list[dict[str, Any]]:
     """
     Build multiple samples from a list of gt_structs.
@@ -172,6 +207,8 @@ def build_batch(
         difficulty:   Difficulty level.
         start_index:  Sample index to start from (for globally unique IDs).
         base_seed:    Base random seed.
+        track:        'synthetic' (default) or 'real_ocr'.
+        image_dir:    For real_ocr, where to save rendered images.
 
     Returns:
         List of complete sample dicts.
@@ -184,6 +221,8 @@ def build_batch(
             difficulty=difficulty,
             sample_index=start_index + i,
             base_seed=base_seed,
+            track=track,
+            image_dir=image_dir,
         )
         samples.append(sample)
     return samples
