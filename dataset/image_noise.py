@@ -57,6 +57,7 @@ def apply_speckle(image: Image.Image, density: float, rng: random.Random) -> Ima
     if density <= 0:
         return image
     px = image.load()
+    assert px is not None, "PIL.Image.load() returned None on a valid image"
     w, h = image.size
     n = int(w * h * density)
     for _ in range(n):

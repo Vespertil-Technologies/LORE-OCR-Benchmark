@@ -105,15 +105,17 @@ def render_text(
 
     # Measure widest line and total height using a temp draw context.
     # Using a 1x1 placeholder image just for the .textbbox() call.
+    # Pillow's textbbox returns floats in newer typeshed stubs, so we keep
+    # the running maximum as a float and cast once when sizing the image.
     tmp = Image.new("RGB", (1, 1), bg)
     draw = ImageDraw.Draw(tmp)
     line_h = int(font_size * line_spacing)
-    max_w = 0
+    max_w: float = 0.0
     for line in lines:
         bbox = draw.textbbox((0, 0), line or " ", font=font)
         max_w = max(max_w, bbox[2] - bbox[0])
 
-    width  = max_w + 2 * margin
+    width  = int(max_w) + 2 * margin
     height = max(line_h * len(lines), line_h) + 2 * margin
 
     image = Image.new("RGB", (width, height), bg)
