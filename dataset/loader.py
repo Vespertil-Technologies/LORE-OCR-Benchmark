@@ -28,6 +28,22 @@ VALID_DOMAINS     = {"receipts", "insurance", "hospital"}
 VALID_DIFFICULTIES = {"easy", "medium", "hard", "extreme"}
 VALID_SPLITS      = {"train", "dev", "test"}
 VALID_TASKS       = {"extraction", "normalization", "correction", "hallucination", "schema"}
+VALID_TRACKS      = {"synthetic", "real_ocr"}
+
+# Track-to-subdirectory mapping. The synthetic track lives at the data root;
+# real_ocr lives under data_dir/vision so the two tracks can coexist.
+_TRACK_SUBDIR: dict[str, str] = {
+    "synthetic": "",
+    "real_ocr":  "vision",
+}
+
+
+def _resolve_track_dir(data_dir: Path, track: str) -> Path:
+    """Return the subdirectory of data_dir that holds samples for the given track."""
+    if track not in VALID_TRACKS:
+        raise ValueError(f"Invalid track '{track}'. Must be one of: {sorted(VALID_TRACKS)}")
+    sub = _TRACK_SUBDIR[track]
+    return data_dir / sub if sub else data_dir
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -113,6 +129,7 @@ def iter_samples(
     split: str | None = None,
     task: str | None = None,
     noise_tags: list[str] | None = None,
+    track: str = "synthetic",
 ) -> Generator[dict, None, None]:
     """
     Generator that yields samples one at a time. Memory-efficient for large files.
@@ -125,6 +142,9 @@ def iter_samples(
         task:       Optional task filter.
         noise_tags: Optional list of noise tags - yields only samples containing
                     ALL of the listed tags.
+        track:      Which corruption track to load. 'synthetic' (default) reads
+                    from data_dir directly. 'real_ocr' reads from data_dir/vision/
+                    where scripts/build_vision_dataset.py writes its output.
 
     Yields:
         Sample dicts, one at a time.
@@ -135,7 +155,8 @@ def iter_samples(
     if task and task not in VALID_TASKS:
         raise ValueError(f"Invalid task '{task}'. Must be one of: {VALID_TASKS}")
 
-    files = discover_files(data_dir, domain, difficulty, split)
+    track_dir = _resolve_track_dir(data_dir, track)
+    files = discover_files(track_dir, domain, difficulty, split)
 
     if not files:
         return  # No files matched - yield nothing
@@ -165,6 +186,7 @@ def load_samples(
     noise_tags: list[str] | None = None,
     n: int | None = None,
     seed: int = 42,
+    track: str = "synthetic",
 ) -> list[dict]:
     """
     Load all matching samples into memory as a list.
@@ -178,11 +200,12 @@ def load_samples(
         noise_tags: Optional list of noise tags (ALL must be present).
         n:          If set, return a random sample of N items instead of all.
         seed:       Random seed for reproducible sampling when n is set.
+        track:      'synthetic' (default) or 'real_ocr'. See iter_samples.
 
     Returns:
         List of sample dicts.
     """
-    samples = list(iter_samples(data_dir, domain, difficulty, split, task, noise_tags))
+    samples = list(iter_samples(data_dir, domain, difficulty, split, task, noise_tags, track))
 
     if n is not None:
         if n > len(samples):
